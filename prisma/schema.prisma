@@ -6,9 +6,11 @@ generator client {
 }
 
 datasource db {
-  // 部署到 Vercel 用 Vercel Postgres,本地開發用 Neon 免費實例或本地 Postgres
+  // Vercel + Neon 整合:Prisma 用 UNPOOLED 連接(無 pgbouncer),避開 prepared statement 問題
+  // 部署到 Vercel 時,Vercel 會自動注入 DATABASE_URL (pgbouncer) 和 DATABASE_URL_UNPOOLED (direct)
+  // 我們用 UNPOOLED 那個,Prisma 連線最穩
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("DATABASE_URL_UNPOOLED")
 }
 
 // ========= 用戶 =========

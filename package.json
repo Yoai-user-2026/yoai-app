@@ -5,7 +5,7 @@
   "description": "Yoai — 你的 AI 生活伴侶與健康管家 (PWA)",
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && (prisma db push --skip-generate || echo '⚠️ db push skipped, will retry on next deploy') && next build",
+    "build": "prisma generate && echo '=== prisma db push START ===' && prisma db push --skip-generate 2>&1 && echo '=== prisma db push OK ===' && next build",
     "start": "next start",
     "lint": "next lint",
     "db:push": "prisma db push",

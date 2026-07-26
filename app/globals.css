@@ -1,3 +1,7 @@
+@import '@fontsource/noto-sans-tc/400.css';
+@import '@fontsource/noto-sans-tc/500.css';
+@import '@fontsource/noto-sans-tc/700.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -14,7 +18,7 @@
 html, body {
   background: var(--background);
   color: var(--foreground);
-  font-family: system-ui, -apple-system, 'PingFang TC', 'Helvetica Neue', sans-serif;
+  font-family: 'Noto Sans TC', system-ui, -apple-system, 'PingFang TC', 'Helvetica Neue', sans-serif;
   /* 防止 PWA 拉動刷新 */
   overscroll-behavior-y: contain;
 }

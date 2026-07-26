@@ -5,7 +5,7 @@
   "description": "Yoai — 你的 AI 生活伴侶與健康管家 (PWA)",
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
+    "build": "prisma generate && (prisma db push --skip-generate || echo '⚠️ db push skipped, will retry on next deploy') && next build",
     "start": "next start",
     "lint": "next lint",
     "db:push": "prisma db push",
@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.7.2",
+    "@fontsource/noto-sans-tc": "^5.3.0",
     "@prisma/client": "^5.22.0",
     "bcryptjs": "^2.4.3",
     "lucide-react": "^0.460.0",

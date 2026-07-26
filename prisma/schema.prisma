@@ -6,8 +6,8 @@ generator client {
 }
 
 datasource db {
-  // 開發用 SQLite,生產環境改為 "postgresql" 並配合 Neon/Supabase
-  provider = "sqlite"
+  // 部署到 Vercel 用 Vercel Postgres,本地開發用 Neon 免費實例或本地 Postgres
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 

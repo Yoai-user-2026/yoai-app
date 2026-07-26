@@ -1,4 +1,4 @@
-// 阿里雲通義千問 (DashScope) — 使用 OpenAI 兼容協議
+// 阿里雲通義千問 / 百煉 (DashScope) — 使用 OpenAI 兼容協議
 // 兼容文檔: https://help.aliyun.com/zh/model-studio/developer-reference/use-qwen-by-calling-api
 import OpenAI from 'openai';
 
@@ -8,9 +8,16 @@ if (!apiKey) {
   console.warn('[Yoai] DASHSCOPE_API_KEY 未設定,AI 對話功能將無法使用');
 }
 
+// baseURL 優先使用用戶在百煉控制台拿到的「OpenAI 兼容地址」
+// 沒有的話 fallback 到通用地址
+// 注意: 阿里雲 2025 改版後,Key 格式為 sk-ws-{id}.{secret}.{signature}
+const baseURL =
+  process.env.DASHSCOPE_BASE_URL ||
+  'https://dashscope.aliyuncs.com/compatible-mode/v1';
+
 export const dashscope = new OpenAI({
   apiKey: apiKey || 'sk-placeholder',
-  baseURL: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
+  baseURL,
 });
 
 export const CHAT_MODEL = process.env.DASHSCOPE_CHAT_MODEL || 'qwen-plus';

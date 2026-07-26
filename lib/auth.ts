@@ -39,57 +39,70 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         // === 註冊 ===
         if (mode === 'register') {
-          const existing = await prisma.user.findUnique({ where: { email } });
-          if (existing) return null;
+          try {
+            const existing = await prisma.user.findUnique({ where: { email } });
+            if (existing) {
+              console.log(`[auth] 註冊失敗: email 已存在 ${email}`);
+              return null;
+            }
 
-          const passwordHash = await bcrypt.hash(password, 10);
-          const userName = name || email.split('@')[0];
+            const passwordHash = await bcrypt.hash(password, 10);
+            const userName = name || email.split('@')[0];
 
-          // 決定要加入的家庭群組
-          let familyGroupId: string | undefined;
-          let familyRole = 'owner';
+            // 決定要加入的家庭群組
+            let familyGroupId: string | undefined;
+            let familyRole = 'owner';
 
-          if (inviteCode) {
-            // 透過邀請碼加入既有家庭
-            const group = await prisma.familyGroup.findUnique({
-              where: { inviteCode },
-            });
-            if (!group) return null;
-            familyGroupId = group.id;
-            familyRole = 'member';
-          }
+            if (inviteCode) {
+              // 透過邀請碼加入既有家庭
+              const group = await prisma.familyGroup.findUnique({
+                where: { inviteCode },
+              });
+              if (!group) {
+                console.log(`[auth] 註冊失敗: 邀請碼無效 ${inviteCode}`);
+                return null;
+              }
+              familyGroupId = group.id;
+              familyRole = 'member';
+            }
 
-          const user = await prisma.user.create({
-            data: {
-              email,
-              name: userName,
-              passwordHash,
-              familyGroupId,
-              familyRole,
-            },
-            include: { familyGroup: true },
-          });
-
-          // 如果是 owner,建立家庭群組
-          if (!familyGroupId) {
-            const group = await prisma.familyGroup.create({
+            const user = await prisma.user.create({
               data: {
-                name: process.env.DEFAULT_FAMILY_NAME || '我們的家',
-                members: { connect: { id: user.id } },
+                email,
+                name: userName,
+                passwordHash,
+                familyGroupId,
+                familyRole,
               },
+              include: { familyGroup: true },
             });
-            // 更新用戶的 familyGroupId
-            await prisma.user.update({
-              where: { id: user.id },
-              data: { familyGroupId: group.id, familyRole: 'owner' },
-            });
-          }
+            console.log(`[auth] 用戶建立成功: ${user.id} ${email}`);
 
-          return {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-          };
+            // 如果是 owner,建立家庭群組
+            if (!familyGroupId) {
+              const group = await prisma.familyGroup.create({
+                data: {
+                  name: process.env.DEFAULT_FAMILY_NAME || '我們的家',
+                  members: { connect: { id: user.id } },
+                },
+              });
+              await prisma.user.update({
+                where: { id: user.id },
+                data: { familyGroupId: group.id, familyRole: 'owner' },
+              });
+              console.log(`[auth] 家庭群組建立成功: ${group.id}`);
+            }
+
+            return {
+              id: user.id,
+              email: user.email,
+              name: user.name,
+            };
+          } catch (err: any) {
+            console.error(`[auth] 註冊異常:`, err?.message || err);
+            // 拋出錯誤以觸發前端更詳細的提示
+            throw new Error(`註冊失敗: ${err?.message || '未知錯誤'}`);
+          }
         }
 
         // === 登入 ===

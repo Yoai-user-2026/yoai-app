@@ -30,13 +30,28 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
-        setError(mode === 'register' ? '註冊失敗,Email 可能已被使用或密碼太短(至少 6 位)' : '登入失敗,帳號或密碼錯誤');
+        // Auth.js 會把 CredentialsError 包裝成 "CredentialsSignin" 或 "Configuration"
+        const errCode = (result as any)?.code || result.error;
+        let msg = '';
+        if (errCode === 'CredentialsSignin') {
+          msg = mode === 'register'
+            ? '註冊失敗:Email 可能已被使用、密碼太短(至少 6 位)或邀請碼無效'
+            : '登入失敗:帳號或密碼錯誤';
+        } else if (typeof errCode === 'string' && errCode.includes('註冊失敗')) {
+          // 從後端拋出的具體錯誤
+          msg = errCode;
+        } else {
+          msg = `認證錯誤 (${errCode}),請重試或聯絡管理員`;
+        }
+        setError(msg);
+        console.error('[login] 認證失敗:', errCode, result);
       } else {
         router.push('/chat');
         router.refresh();
       }
-    } catch (err) {
-      setError('發生錯誤,請稍後再試');
+    } catch (err: any) {
+      console.error('[login] 異常:', err);
+      setError(`發生錯誤: ${err?.message || '請稍後再試'}`);
     } finally {
       setLoading(false);
     }

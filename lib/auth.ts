@@ -26,6 +26,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         name: { label: 'Name', type: 'text' }, // 註冊用
         mode: { label: 'Mode', type: 'text' }, // "login" | "register"
         inviteCode: { label: 'Invite Code', type: 'text' }, // 加入家庭群組用
+        source: { label: 'Source', type: 'text' }, // 追蹤來源(分享 URL)
       },
       async authorize(credentials) {
         const email = String(credentials?.email || '').toLowerCase().trim();
@@ -50,6 +51,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
             const passwordHash = await bcrypt.hash(password, 10);
             const userName = name || email.split('@')[0];
+            // 追蹤來源(URL query string ?source=xxx)
+            const shareSource = String(credentials?.source || '').trim() || null;
 
             // 決定要加入的家庭群組
             let familyGroupId: string | undefined;
@@ -75,10 +78,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 passwordHash,
                 familyGroupId,
                 familyRole,
+                shareSource,
               },
               include: { familyGroup: true },
             });
-            console.log(`[auth] 用戶建立成功: ${user.id} ${email}`);
+            console.log(`[auth] 用戶建立成功: ${user.id} ${email} (source: ${shareSource || 'organic'})`);
 
             // 如果是 owner,建立家庭群組
             if (!familyGroupId) {

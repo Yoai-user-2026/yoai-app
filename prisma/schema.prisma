@@ -20,6 +20,7 @@ model User {
   name          String?
   passwordHash  String?        // 可選 — 也支持 OAuth / Email Magic Link
   avatarUrl     String?
+  shareSource   String?        // 從哪個分享連結進來的(追蹤用)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 
@@ -34,9 +35,12 @@ model User {
   conversations  Conversation[]
   memories       Memory[]
   uploadedFoods  FoodRecord[]   @relation("FoodUploader")
+  usageLogs      UsageLog[]
+  feedbacks      Feedback[]
   sessions       Session[]
 
   @@index([familyGroupId])
+  @@index([createdAt])
 }
 
 // ========= 家庭群組 =========
@@ -105,6 +109,48 @@ model Memory {
 
   @@unique([userId, key])
   @@index([userId])
+}
+
+// ========= 使用量日誌(用於 Rate Limiting + 統計) =========
+model UsageLog {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // 調用類型
+  type            String   // "chat" | "vision" | "food"
+  // 估算的 token 消耗
+  promptTokens    Int      @default(0)
+  completionTokens Int     @default(0)
+  // 自動分類(用於 dashboard 趨勢分析)
+  category        String?  // "diet" | "emotion" | "recipe" | "info" | "other"
+  // 請求摘要(不保存原文,只保存前 100 字)
+  requestSummary  String?
+  responseSummary String?
+  createdAt       DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([createdAt])
+  @@index([type, createdAt])
+}
+
+// ========= 用戶反饋 =========
+model Feedback {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // 反饋類型: "thumbs" (按讚/倒讚) | "text" (文字反饋)
+  type      String
+  // thumbs 類型: 1 = 讚, -1 = 倒讚
+  // text 類型: 0 (不評分)
+  rating    Int      @default(0)
+  // 對應的 assistant 訊息 ID(可選)
+  messageContent String?
+  // 文字反饋內容
+  content   String?
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([type, createdAt])
 }
 
 // ========= NextAuth Session =========

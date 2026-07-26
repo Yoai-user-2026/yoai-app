@@ -1,18 +1,45 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function LoginPage() {
+  return (
+    <Suspense fallback={<LoadingScreen />}>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoadingScreen() {
+  return (
+    <main className="min-h-screen flex items-center justify-center bg-cream-50">
+      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-cocoa-400 to-cocoa-600 flex items-center justify-center text-xl animate-pulse">
+        🌿
+      </div>
+    </main>
+  );
+}
+
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const inviteFromUrl = searchParams.get('invite') || '';
+  const sourceFromUrl = searchParams.get('source') || '';
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
-  const [inviteCode, setInviteCode] = useState('');
+  const [inviteCode, setInviteCode] = useState(inviteFromUrl);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (inviteFromUrl) {
+      setMode('register');
+    }
+  }, [inviteFromUrl]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,6 +58,7 @@ export default function LoginPage() {
       if (mode === 'register') {
         credentials.name = name || '';
         credentials.inviteCode = trimmedInvite; // 空字串而非 undefined
+        if (sourceFromUrl) credentials.source = sourceFromUrl; // 追蹤來源
       }
 
       const result = await signIn('credentials', {

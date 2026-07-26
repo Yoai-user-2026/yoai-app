@@ -3,6 +3,7 @@ import { auth, signOut } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { ensureFamilyForUser } from '@/lib/family';
 import { Copy, LogOut, User as UserIcon } from 'lucide-react';
+import Link from 'next/link';
 
 export default async function FamilyPage() {
   const session = await auth();
@@ -82,6 +83,17 @@ export default async function FamilyPage() {
         <p>你和 Yoai 的對話、記憶 — <strong>完全私密</strong>,只有你能看到</p>
         <p>家庭食物記錄 — <strong>全家共享</strong>,自動同步給每位成員</p>
       </section>
+
+      {/* Admin 入口(只有 owner 看得到) */}
+      {group.members.find((m) => m.id === userId && m.familyRole === 'owner') && (
+        <Link
+          href="/admin"
+          className="block bg-gradient-to-r from-cocoa-500 to-cocoa-600 text-white rounded-2xl p-4 text-center font-medium hover:from-cocoa-600 hover:to-cocoa-700 transition-all"
+        >
+          📊 內測儀表板
+          <p className="text-xs opacity-80 mt-0.5 font-normal">看用戶、調用、反饋、Token 消耗</p>
+        </Link>
+      )}
 
       {/* 登出 */}
       <form

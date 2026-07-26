@@ -39,6 +39,9 @@ next-env.d.ts
 # prisma
 /prisma/dev.db
 /prisma/dev.db-journal
+/prisma/*.db
+/prisma/*.db-journal
+/prisma/prisma/
 
 # uploads (用戶上傳)
 public/uploads/

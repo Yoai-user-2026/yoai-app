@@ -1,0 +1,26 @@
+{
+  "name": "Yoai — 你的 AI 生活伴侶",
+  "short_name": "Yoai",
+  "description": "溫暖、貼心、永遠在身邊。Yoai 陪你過好每一天。",
+  "start_url": "/chat",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fdfaf6",
+  "theme_color": "#8a6b4d",
+  "lang": "zh-Hant",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["lifestyle", "health", "productivity"]
+}

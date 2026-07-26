@@ -1,0 +1,117 @@
+// Yoai 數據模型
+// 設計原則: 個人數據(userId 級別)與家庭共享數據(familyGroupId 級別)嚴格分離
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  // 開發用 SQLite,生產環境改為 "postgresql" 並配合 Neon/Supabase
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ========= 用戶 =========
+model User {
+  id            String         @id @default(cuid())
+  email         String         @unique
+  name          String?
+  passwordHash  String?        // 可選 — 也支持 OAuth / Email Magic Link
+  avatarUrl     String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  // 一個用戶屬於一個家庭群組
+  familyGroupId String?
+  familyGroup   FamilyGroup?   @relation(fields: [familyGroupId], references: [id], onDelete: SetNull)
+
+  // 一個用戶在家庭中的角色
+  familyRole    String         @default("member") // "owner" | "member"
+
+  // 關聯 — 只查詢 userId = 自己 的數據
+  conversations  Conversation[]
+  memories       Memory[]
+  uploadedFoods  FoodRecord[]   @relation("FoodUploader")
+  sessions       Session[]
+
+  @@index([familyGroupId])
+}
+
+// ========= 家庭群組 =========
+model FamilyGroup {
+  id        String   @id @default(cuid())
+  name      String
+  // 邀請碼 — 新成員可透過此碼加入
+  inviteCode String  @unique @default(cuid())
+  createdAt DateTime @default(now())
+
+  members   User[]
+  foods     FoodRecord[] // 食物記錄對所有成員可見
+}
+
+// ========= 食物記錄(家庭共享) =========
+model FoodRecord {
+  id            String       @id @default(cuid())
+  familyGroupId String
+  familyGroup   FamilyGroup  @relation(fields: [familyGroupId], references: [id], onDelete: Cascade)
+  uploadedById  String
+  uploadedBy    User         @relation("FoodUploader", fields: [uploadedById], references: [id], onDelete: Cascade)
+
+  // 從圖片提取的結構化資料
+  name          String       // 品名,如 "雞蛋 6 入"
+  category      String?      // "蔬菜" | "水果" | "肉類" | "乳製品" | "零食" | "其他"
+  quantity      Float        @default(1)
+  unit          String?      // "個" | "盒" | "包" | "kg" | "g" | "ml" | "L"
+  expiryDate    DateTime?    // 有效日期(可選)
+  imageUrl      String?      // 原圖 URL
+  sourceText    String?      // 用戶輸入的原始文字
+  rawVisionJson String?      // 視覺模型原始回傳(JSON 字符串)
+
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([familyGroupId, createdAt])
+  @@index([uploadedById])
+}
+
+// ========= 對話記錄(個人私密) =========
+model Conversation {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      String   // "user" | "assistant" | "system"
+  content   String
+  // 附加資料 — 例如用戶情緒標籤、是否包含圖片
+  metadata  String?  // JSON 字符串
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+// ========= 個人記憶(個人私密) =========
+model Memory {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // key: 偏好鍵 , value: 內容
+  key       String   // "favorite_food" | "allergy" | "lifestyle" | ...
+  value     String
+  // 強度 — 隨時間衰減
+  weight    Float    @default(1.0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, key])
+  @@index([userId])
+}
+
+// ========= NextAuth Session =========
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expires      DateTime
+
+  @@index([userId])
+}

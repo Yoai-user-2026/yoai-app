@@ -4,6 +4,7 @@ import { prisma } from '@/lib/db';
 import { ensureFamilyForUser } from '@/lib/family';
 import { Copy, LogOut, User as UserIcon } from 'lucide-react';
 import Link from 'next/link';
+import { InviteGenerator } from '@/components/InviteGenerator';
 
 export default async function FamilyPage() {
   const session = await auth();
@@ -40,14 +41,13 @@ export default async function FamilyPage() {
           <p className="text-xs opacity-75 mb-1">邀請碼</p>
           <p className="font-mono text-lg tracking-wider break-all">{group.inviteCode}</p>
         </div>
-        <div className="bg-white/15 backdrop-blur rounded-2xl p-3">
-          <p className="text-xs opacity-75 mb-1">邀請連結</p>
-          <p className="text-xs break-all opacity-90">{inviteUrl}</p>
-        </div>
         <p className="text-xs opacity-80 mt-3">
           家人註冊時貼上邀請碼,就會加入這個家 🌿
         </p>
       </section>
+
+      {/* 分享連結生成器 */}
+      <InviteGenerator inviteCode={group.inviteCode} />
 
       {/* 成員列表 */}
       <section>

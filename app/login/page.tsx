@@ -20,12 +20,21 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const result = await signIn('credentials', {
+      // 注意:auth.js 用 FormData 提交,所有 undefined 會被轉成字符串 "undefined"
+      // 所以永遠不要傳 undefined,要麼不傳該字段,要麼傳空字符串
+      const trimmedInvite = inviteCode?.trim() || '';
+      const credentials: Record<string, any> = {
         email,
         password,
-        name: mode === 'register' ? name : undefined,
         mode,
-        inviteCode: mode === 'register' && inviteCode ? inviteCode : undefined,
+      };
+      if (mode === 'register') {
+        credentials.name = name || '';
+        credentials.inviteCode = trimmedInvite; // 空字串而非 undefined
+      }
+
+      const result = await signIn('credentials', {
+        ...credentials,
         redirect: false,
       });
 

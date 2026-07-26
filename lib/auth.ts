@@ -32,7 +32,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const password = String(credentials?.password || '');
         const name = String(credentials?.name || '').trim();
         const mode = String(credentials?.mode || 'login');
-        const inviteCode = String(credentials?.inviteCode || '').trim();
+        // 防止前端不小心傳 "undefined" / "null" 字串
+        const rawInvite = String(credentials?.inviteCode || '').trim();
+        const inviteCode = (rawInvite === 'undefined' || rawInvite === 'null' || !rawInvite) ? '' : rawInvite;
 
         if (!email || !password) return null;
         if (password.length < 6) return null;

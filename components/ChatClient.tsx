@@ -313,7 +313,6 @@ export function ChatClient({ userName, initialMessages, memories }: ChatClientPr
             ref={fileInputRef}
             type="file"
             accept="image/*"
-            capture="environment"
             onChange={handleFileUpload}
             className="hidden"
           />

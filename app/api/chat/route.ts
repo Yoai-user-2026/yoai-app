@@ -80,6 +80,64 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  // === 守門員: vision 失敗 / 圖片不是食物場景 ===
+  // 不讓對話模型在「沒看到圖」的情況下幻想出食物(修 Bug 2: 薑汁雞絲蔬菜湯幽靈回覆)
+  if (imageBase64) {
+    const visionOk = visionResult && Array.isArray(visionResult.items);
+    const isFood = visionResult?.isFoodImage !== false; // 沒明確說「不是」就當作是
+    if (!visionOk || !isFood || extractedFoods.length === 0) {
+      const reason =
+        visionResult?.reason ||
+        'Yoai 看不太清楚這張圖';
+      const friendlyMsg = `${reason} 🌿 換個角度再拍一張,或者直接打字告訴我也行~`;
+
+      // 存用戶訊息
+      await prisma.conversation.create({
+        data: {
+          userId,
+          role: 'user',
+          content: userMessage || '[圖片]',
+          metadata: JSON.stringify({ hasImage: true }),
+        },
+      });
+      // 存 assistant 回應
+      await prisma.conversation.create({
+        data: { userId, role: 'assistant', content: friendlyMsg },
+      });
+      // 記錄 usage
+      try {
+        await recordUsage({
+          userId,
+          type: 'vision',
+          promptTokens: visionTokens,
+          completionTokens: estimateTokens(friendlyMsg),
+          category: 'food',
+          requestSummary: userMessage || '[圖片]',
+          responseSummary: friendlyMsg,
+        });
+      } catch (err) {
+        console.error('[usage] record error:', err);
+      }
+
+      // 回傳 SSE stream (單一訊息,直接關閉)
+      const encoder = new TextEncoder();
+      const stream = new ReadableStream({
+        start(controller) {
+          controller.enqueue(encoder.encode(friendlyMsg));
+          controller.close();
+        },
+      });
+      return new Response(stream, {
+        headers: {
+          'Content-Type': 'text/plain; charset=utf-8',
+          'Cache-Control': 'no-cache',
+          'X-RateLimit-Limit': String(rateLimit.limit),
+          'X-RateLimit-Remaining': String(rateLimit.remaining - 1),
+        },
+      });
+    }
+  }
+
   // === 構建對話歷史 ===
   const recent = await prisma.conversation.findMany({
     where: { userId },

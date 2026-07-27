@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Send, Camera, Sparkles, ThumbsUp, ThumbsDown, MessageSquare, X } from 'lucide-react';
+import { VoiceInput } from './VoiceInput';
 
 interface Message {
   id: string;
@@ -344,6 +345,10 @@ export function ChatClient({ userName, initialMessages, memories }: ChatClientPr
               style={{ minHeight: '44px' }}
             />
           </div>
+          <VoiceInput
+            onTranscript={(text) => setInput((prev) => (prev ? prev + ' ' : '') + text)}
+            disabled={sending || uploading || usage?.remaining === 0}
+          />
           <button
             onClick={() => sendMessage(input)}
             disabled={sending || (!input.trim() && !uploading) || usage?.remaining === 0}

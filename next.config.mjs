@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // output: 'standalone' — 讓 build 出來能 self-contained 跑
+  // Vercel 自動忽略此設定;阿里雲 FC 部署時需要
+  output: 'standalone',
   // PWA 用 — 允許 service worker
   async headers() {
     return [

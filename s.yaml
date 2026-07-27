@@ -1,0 +1,53 @@
+edition: 1.0.0
+name: yoai-app
+access: default
+# AccessKey 透過環境變數注入:
+#   export ALIBABA_CLOUD_ACCESS_KEY_ID=<your-key>
+#   export ALIBABA_CLOUD_ACCESS_KEY_SECRET=<your-secret>
+# 部署指令: s deploy
+
+services:
+  yoai-web:
+    component: fc3
+    props:
+      region: cn-hongkong
+      functionName: yoai-web
+      runtime: nodejs20
+      # 記憶體 (MB) — 1024 對 Yoai 夠用
+      memorySize: 1024
+      # 逾時 (秒) — AI 串流回應需要時間
+      timeout: 60
+      # Handler — 讀取 package.json 裡的 main 欄位
+      handler: ${env.FC_HANDLER, "index.handler"}
+      # 程式碼位置 — build 完之後的 standalone 資料夾
+      code: ./
+      # 環境變數 — 部署時注入
+      environmentVariables:
+        - key: NODE_ENV
+          value: production
+        - key: AUTH_URL
+          value: ${env.AUTH_URL, "https://yoai-app.fc.cn-hongkong.aliyuncs.com"}
+        - key: AUTH_SECRET
+          value: ${env.AUTH_SECRET}
+        - key: DATABASE_URL
+          value: ${env.DATABASE_URL}
+        - key: DATABASE_URL_UNPOOLED
+          value: ${env.DATABASE_URL_UNPOOLED}
+        - key: DASHSCOPE_API_KEY
+          value: ${env.DASHSCOPE_API_KEY}
+        - key: DASHSCOPE_BASE_URL
+          value: ${env.DASHSCOPE_BASE_URL, "https://dashscope.aliyuncs.com/compatible-mode/v1"}
+        - key: DASHSCOPE_CHAT_MODEL
+          value: ${env.DASHSCOPE_CHAT_MODEL, "qwen-plus"}
+        - key: DASHSCOPE_VL_MODEL
+          value: ${env.DASHSCOPE_VL_MODEL, "qwen-vl-plus"}
+        - key: DEFAULT_FAMILY_NAME
+          value: ${env.DEFAULT_FAMILY_NAME, "我們的家"}
+        - key: PORT
+          value: "3000"
+      # HTTP 觸發器設定
+      internetAccess: true
+      vpcConfig: []
+      customDomains: []
+      # 啟動指令
+      caPort: 3000

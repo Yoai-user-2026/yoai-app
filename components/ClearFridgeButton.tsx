@@ -18,7 +18,7 @@ export function ClearFridgeButton({ count }: { count: number }) {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/food/clear', { method: 'POST' });
+      const res = await fetch('/api/food-clear', { method: 'POST' });
       const json = await res.json();
       if (!res.ok || !json.success) {
         setError(json.message || json.error || '清空失敗');

@@ -106,6 +106,65 @@ production 上線
 
 ---
 
+## 三.五、Region × Endpoint × Key 三者必須配套 (2026-07-31 教訓)
+
+> ⚠️ 這條規矩**是我們付出慘痛代價學到的**——7/31 下午，聊天功能掛了 1.5 小時。
+
+### 故事
+
+7/26 我們把 `DASHSCOPE_BASE_URL` 設成：
+
+```
+https://ws-44r167tof2200yam.cn-beijing.maas.aliyuncs.com/compatible-mode/v1
+```
+
+這是阿里雲**中國版北京區域**的 maas 端點，配的是中國版控制台（`dashscope.console.aliyun.com`）生成的 key。
+
+當時看起來一切正常，直到 7/31 把 Vercel 機房搬到香港 hkg1：
+
+- hkg1 連不上 `cn-beijing.maas.aliyuncs.com`（跨 GFW）
+- 錯誤訊息顯示「網路不順」——**誤導性極強**，其實是 region/endpoint 對不上
+- Food Summary 沒事——它不打 AI，只讀本地知識庫
+- 聊天整個掛掉
+
+### 規則（永遠記住）
+
+**Key、Endpoint、Region 三者必須配套。換一個就要換全部。**
+
+| 控制台 | 端點 URL | 配的 Key |
+|--------|----------|----------|
+| 中國版 `dashscope.console.aliyun.com` | `https://dashscope.aliyuncs.com/compatible-mode/v1` 或 `https://*.cn-beijing.maas.aliyuncs.com/compatible-mode/v1` | 中國版 key（在中國控制台生成） |
+| 國際版 `modelstudio.console.alibabacloud.com` | `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` | 國際版 key（在國際控制台生成） |
+
+### 部署位置 → 推薦配套
+
+| Vercel 機房 | 用戶群 | 推薦配套 |
+|------------|--------|----------|
+| `hkg1` (香港) | HK + 東南亞 | 國際版 + 新加坡 region key，端點 `dashscope-intl` |
+| `sin1` (新加坡) | 東南亞 | 國際版 + 新加坡 key，端點 `dashscope-intl` |
+| 美西 `iad1` | 北美 | 國際版 + 美國 region key |
+| `cn-` 開頭 | 中國大陸 | 中國版 + 北京 key，端點 `dashscope.aliyuncs.com` |
+
+### 自我檢查清單（換任何一個之前先問這 3 題）
+
+1. **這個 key 是在哪個 console 生成的？**（中國版 / 國際版）
+2. **我要連的端點 URL 屬於哪個體系？**（看 hostname 段）
+3. **部署在哪個機房？**（Vercel hkg1 連得到嗎？）
+
+三個答案**必須一致**才動。
+
+### 失敗模式（這個坑真實發生過）
+
+- ❌ **換端點 URL 沒換 key** → 401 invalid_api_key
+- ❌ **換 key 沒換端點** → Connection error（從遠端機房連不上）
+- ❌ **換 region 沒確認配額** → 之前的「免費用完即停」保護可能不跟著搬
+
+### 教訓（寫進 Mavis SOP）
+
+> **任何 key 換環境前，先確認 key 跟端點的 region 是同一個。**
+
+---
+
 ## 四、Database 策略 (共享 Neon)
 
 ### 為什麼用 Neon Singapore

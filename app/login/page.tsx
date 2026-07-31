@@ -101,7 +101,12 @@ function LoginForm() {
         <div className="w-20 h-20 mx-auto mb-4 rounded-3xl bg-gradient-to-br from-cocoa-400 to-cocoa-600 flex items-center justify-center shadow-soft">
           <span className="text-3xl">🌿</span>
         </div>
-        <h1 className="text-3xl font-serif text-cocoa-600 tracking-wide">Yoai</h1>
+        <div className="flex items-center justify-center gap-2">
+          <h1 className="text-3xl font-serif text-cocoa-600 tracking-wide">Yoai</h1>
+          <span className="text-[10px] px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full font-medium tracking-wider">
+            內測
+          </span>
+        </div>
         <p className="mt-2 text-sm text-cocoa-500">在細微處,陪你過好每一天</p>
       </div>
 

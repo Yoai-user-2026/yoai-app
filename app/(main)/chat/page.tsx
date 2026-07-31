@@ -6,12 +6,15 @@ export default async function ChatPage() {
   const session = await auth();
   const userId = (session!.user as any).id;
 
-  // 載入最近 30 條對話(按時間正序)
-  const history = await prisma.conversation.findMany({
+  // 載入最近 50 條對話(按時間正序)
+  // 修正: 之前用 asc + take 30 → 拿到最舊 30 條
+  // 改成 desc + take 50,再 reverse 維持時間正序
+  const historyDesc = await prisma.conversation.findMany({
     where: { userId },
-    orderBy: { createdAt: 'asc' },
-    take: 30,
+    orderBy: { createdAt: 'desc' },
+    take: 50,
   });
+  const history = historyDesc.reverse();
 
   // 載入用戶記憶
   const memories = await prisma.memory.findMany({

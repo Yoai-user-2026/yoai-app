@@ -7,6 +7,7 @@ import { buildSystemPrompt, FOOD_VISION_PROMPT } from '@/lib/yoai-prompt';
 import { ensureFamilyForUser } from '@/lib/family';
 import { checkRateLimit, recordUsage } from '@/lib/rate-limit';
 import { estimateTokens } from '@/lib/token-estimate';
+import { extractAndSaveMemories } from '@/lib/memory-extract';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -57,6 +58,18 @@ export async function POST(req: NextRequest) {
 
   // 確保有家庭群組
   await ensureFamilyForUser(userId);
+
+  // === 抽取記憶 (Bug #2 修正) — 在建構 messages 之前,讓新記憶能進當次回應 ===
+  if (userMessage) {
+    try {
+      const newMemories = await extractAndSaveMemories(userId, userMessage);
+      if (newMemories.length > 0) {
+        console.log('[memory] extracted:', newMemories, 'for user', userId);
+      }
+    } catch (err) {
+      console.error('[memory] extract error:', err);
+    }
+  }
 
   // === 自動分類(用戶訊息)===
   const category = classifyMessage(userMessage, !!imageBase64);
@@ -139,15 +152,27 @@ export async function POST(req: NextRequest) {
   }
 
   // === 構建對話歷史 ===
-  const recent = await prisma.conversation.findMany({
+  // 修正 Bug #1: 用 desc 拿最新 20 條,再 reverse 回時間順序
+  // 動態調整 take: prompt 預算 6000 tokens,留給歷史約 4500 (system + 新訊息 約 1500)
+  const HISTORY_TOKEN_BUDGET = 4500;
+  const recentDesc = await prisma.conversation.findMany({
     where: { userId },
-    orderBy: { createdAt: 'asc' },
-    take: 20,
+    orderBy: { createdAt: 'desc' },
+    take: 50, // 先拿多一些,再用 token 預算過濾
   });
+  const recent: typeof recentDesc = [];
+  let histTokens = 0;
+  for (const r of recentDesc) {
+    const t = estimateTokens(r.content) + 4; // 每則 +4 overhead
+    if (histTokens + t > HISTORY_TOKEN_BUDGET) break;
+    recent.push(r);
+    histTokens += t;
+  }
+  recent.reverse(); // 維持時間正序（舊→新）給 LLM
 
   const memories = await prisma.memory.findMany({
     where: { userId },
-    orderBy: { weight: 'desc' },
+    orderBy: [{ weight: 'desc' }, { updatedAt: 'desc' }],
     take: 8,
   });
 
@@ -192,12 +217,31 @@ export async function POST(req: NextRequest) {
       let fullResponse = '';
 
       // 先存用戶訊息
+      // 修正 Bug #3: 圖片時把視覺識別結果存進 metadata
+      // 之後重看對話時,Yoai 能記得那張圖識別出什麼
+      // (記憶抽取已移到上面,確保新記憶能進當次回應的 system prompt)
+      const userMetadata = imageBase64
+        ? JSON.stringify({
+            hasImage: true,
+            vision: visionResult
+              ? {
+                  isFoodImage: visionResult.isFoodImage,
+                  storeName: visionResult.storeName,
+                  purchaseDate: visionResult.purchaseDate,
+                  total: visionResult.total,
+                  items: visionResult.items,
+                  summary: visionResult.summary,
+                }
+              : null,
+          })
+        : null;
+
       await prisma.conversation.create({
         data: {
           userId,
           role: 'user',
           content: userMessage || '[圖片]',
-          metadata: imageBase64 ? JSON.stringify({ hasImage: true }) : null,
+          metadata: userMetadata,
         },
       });
 

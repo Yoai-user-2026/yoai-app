@@ -1,0 +1,952 @@
+{
+  "version": "1.0.0",
+  "last_reviewed": "2026-07-31",
+  "region_focus": "Hong Kong / Asia",
+  "sources": {
+    "usda": "USDA FoodData Central (https://fdc.nal.usda.gov/)",
+    "codex": "Codex Alimentarius (https://www.fao.org/fao-who-codexalimentarius/)",
+    "aspca": "ASPCA Animal Poison Control (https://www.aspca.org/pet-care/animal-poison-control)",
+    "cfst": "Centre for Food Safety, Hong Kong (https://www.cfs.gov.hk/)",
+    "twfda": "Taiwan FDA (https://www.fda.gov.tw/)",
+    "cn_food_table": "《中國食物成分表》第6版 (北京大學醫學部)",
+    "nhs_allergens": "NHS Food Allergens (https://www.nhs.uk/conditions/food-allergy/)"
+  },
+  "ingredients": [
+    {
+      "name": "菠菜",
+      "aliases": ["spinach", "波菜"],
+      "category": "蔬菜",
+      "safety_notes": [
+        {
+          "type": "cooking",
+          "text": "建議煮熟吃，生吃有草酸可能影響鈣吸收",
+          "sources": ["usda", "cn_food_table"],
+          "confidence": "high"
+        }
+      ],
+      "pet_danger": {"dog": "safe", "cat": "safe", "source": "aspca"},
+      "common_allergens": [],
+      "health_benefits": [
+        {"text": "富含鐵質、維生素 K、葉酸", "source": "cn_food_table"}
+      ],
+      "purchase_advice": "葉片翠綠、莖部挺直為佳；避免發黃或軟爛"
+    },
+    {
+      "name": "四季豆",
+      "aliases": ["豆角", "菜豆", "green beans"],
+      "category": "蔬菜",
+      "safety_notes": [
+        {
+          "type": "cooking",
+          "text": "必須完全煮熟（建議 100°C 至少 5 分鐘），生吃或未煮熟含天然毒素（植物凝集素）",
+          "sources": ["cfst", "codex"],
+          "confidence": "high"
+        }
+      ],
+      "pet_danger": {"dog": "safe (if cooked)", "cat": "safe (if cooked)", "source": "aspca"},
+      "common_allergens": [],
+      "health_benefits": [
+        {"text": "膳食纖維、維生素 C", "source": "cn_food_table"}
+      ],
+      "purchase_advice": "豆莢飽滿翠綠、無斑點"
+    },
+    {
+      "name": "茄子",
+      "aliases": ["eggplant", "茄"],
+      "category": "蔬菜",
+      "safety_notes": [
+        {
+          "type": "preparation",
+          "text": "茄子吸油多，烹飪時注意用油量",
+          "sources": ["cn_food_table"],
+          "confidence": "medium"
+        }
+      ],
+      "pet_danger": {"dog": "safe", "cat": "safe", "source": "aspca"},
+      "common_allergens": [],
+      "health_benefits": [
+        {"text": "花青素、膳食纖維", "source": "cn_food_table"}
+      ],
+      "purchase_advice": "表皮光滑有光澤、按壓有彈性"
+    },
+    {
+      "name": "番茄",
+      "aliases": ["tomato"],
+      "category": "蔬菜",
+      "safety_notes": [
+        {
+          "type": "preparation",
+          "text": "容易有農藥殘留，建議清洗後去皮或用流動水浸泡 15 分鐘",
+          "sources": ["twfda", "cfst"],
+          "confidence": "medium"
+        }
+      ],
+      "pet_danger": {"dog": "safe (ripe only)", "cat": "safe (ripe only)", "source": "aspca", "note": "未成熟的番茄含微量茄鹼，對寵物不友好"},
+      "common_allergens": [],
+      "health_benefits": [
+        {"text": "番茄紅素（烹煮後更易吸收）、維生素 C", "source": "usda"}
+      ],
+      "purchase_advice": "飽滿紅潤、無黑斑"
+    },
+    {
+      "name": "馬鈴薯",
+      "aliases": ["potato", "土豆", "薯仔"],
+      "category": "蔬菜",
+      "safety_notes": [
+        {
+          "type": "toxicity",
+          "text": "發芽、發綠或損傷部位含龍葵素（solanine）有毒，必須整顆丟棄，不可只切除",
+          "sources": ["cfst", "codex"],
+          "confidence": "high"
+        }
+      ],
+      "pet_danger": {"dog": "unsafe (raw/green)", "cat": "unsafe (raw/green)", "source": "aspca"},
+      "common_allergens": [],
+      "health_benefits": [
+        {"text": "碳水化合物、維生素 C、鉀", "source": "cn_food_table"}
+      ],
+      "purchase_advice": "外皮完整、無發芽、無綠斑"
+    },
+    {
+      "name": "紅蘿蔔",
+      "aliases": ["carrot", "胡蘿蔔"],
+      "category": "蔬菜",
+      "safety_notes": [],
+      "pet_danger": {"dog": "safe", "cat": "safe", "source": "aspca"},
+      "common_allergens": [],
+      "health_benefits": [
+        {"text": "β-胡蘿蔔素、維生素 A 前體", "source": "usda"}
+      ],
+      "purchase_advice": "飽滿硬挺、色澤鮮橘"
+    },
+    {
+      "name": "洋蔥",
+      "aliases": ["onion", "蔥頭"],
+      "category": "蔬菜",
+      "safety_notes": [
+        {
+          "type": "toxicity",
+          "text": "含 N-丙基二硫化物，會引起寵物溶血性貧血",
+          "sources": ["aspca", "cfst"],
+          "confidence": "high"
+        }
+      ],
+      "pet_danger": {"dog": "TOXIC (all forms)", "cat": "TOXIC (all forms)", "source": "aspca"},
+      "common_allergens": [],
+      "health_benefits": [
+        {"text": "含硫化合物、槲皮素", "source": "usda"}
+      ],
+      "purchase_advice": "外皮乾燥緊實、無發芽",
+      "warning": "⚠️ 切勿餵食寵物（含烹煮後仍有毒）"
+    },
+    {
+      "name": "蒜頭",
+      "aliases": ["garlic", "大蒜"],
+      "category": "蔬菜",
+      "safety_notes": [
+        {
+          "type": "toxicity",
+          "text": "與洋蔥同類含硫化物，會引起寵物溶血",
+          "sources": ["aspca"],
+          "confidence": "high"
+        }
+      ],
+      "pet_danger": {"dog": "TOXIC", "cat": "TOXIC", "source": "aspca"},
+      "common_allergens": [],
+      "health_benefits": [
+        {"text": "大蒜素，具抗菌特性", "source": "cn_food_table"}
+      ],
+      "purchase_advice": "飽滿硬實、無發霉",
+      "warning": "⚠️ 切勿餵食寵物"
+    },
+    {
+      "name": "韭菜",
+      "aliases": ["chives", "韭黃"],
+      "category": "蔬菜",
+      "safety_notes": [
+        {
+          "type": "toxicity",
+          "text": "與洋蔥蒜頭同類，寵物食用會引起溶血",
+          "sources": ["aspca"],
+          "confidence": "high"
+        }
+      ],
+      "pet_danger": {"dog": "TOXIC", "cat": "TOXIC", "source": "aspca"},
+      "common_allergens": [],
+      "health_benefits": [
+        {"text": "硫化物、維生素 A、C", "source": "cn_food_table"}
+      ],
+      "purchase_advice": "葉片翠綠挺直、無枯黃",
+      "warning": "⚠️ 切勿餵食寵物"
+    },
+    {
+      "name": "苦瓜",
+      "aliases": ["bitter melon", "涼瓜"],
+      "category": "蔬菜",
+      "safety_notes": [
+        {
+          "type": "health_consideration",
+          "text": "性寒，胃寒者、孕婦不宜多食",
+          "sources": ["cn_food_table"],
+          "confidence": "medium"
+        }
+      ],
+      "pet_danger": {"dog": "safe (small amount)", "cat": "consult vet", "source": "aspca"},
+      "common_allergens": [],
+      "health_benefits": [
+        {"text": "苦瓜素、維生素 C，傳統中醫視為清熱降火", "source": "cn_food_table"}
+      ],
+      "purchase_advice": "翠綠飽滿、顆粒突出明顯"
+    },
+    {
+      "name": "冬瓜",
+      "aliases": ["winter melon", "white gourd"],
+      "category": "蔬菜",
+      "safety_notes": [
+        {
+          "type": "health_consideration",
+          "text": "性寒涼，脾胃虛寒者少食",
+          "sources": ["cn_food_table"],
+          "confidence": "medium"
+        }
+      ],
+      "pet_danger": {"dog": "safe", "cat": "safe", "source": "aspca"},
+      "common_allergens": [],
+      "health_benefits": [
+        {"text": "高水分、低熱量，有助利尿", "source": "cn_food_table"}
+      ],
+      "purchase_advice": "外皮完整、重量足（水分飽滿）"
+    },
+    {
+      "name": "高麗菜",
+      "aliases": ["捲心菜", "cabbage", "包菜"],
+      "category": "蔬菜",
+      "safety_notes": [
+        {
+          "type": "preparation",
+          "text": "葉片易殘留農藥，建議剝除外層葉、流動水浸泡 10 分鐘",
+          "sources": ["twfda"],
+          "confidence": "medium"
+        }
+      ],
+      "pet_danger": {"dog": "safe (small amount)", "cat": "safe (small amount)", "source": "aspca", "note": "過量可能脹氣"},
+      "common_allergens": [],
+      "health_benefits": [
+        {"text": "維生素 C、K、U（抗潰瘍）", "source": "cn_food_table"}
+      ],
+      "purchase_advice": "葉球緊實沉重、無黑斑"
+    },
+    {
+      "name": "芒果",
+      "aliases": ["mango"],
+      "category": "水果",
+      "safety_notes": [
+        {
+          "type": "allergen",
+          "text": "常見過敏原之一（與漆樹科植物交叉過敏），部分人食用後出現蕁麻疹",
+          "sources": ["nhs_allergens"],
+          "confidence": "high"
+        }
+      ],
+      "pet_danger": {"dog": "safe (flesh only)", "cat": "safe (flesh only)", "source": "aspca", "note": "果核含氰化物，須去除"},
+      "common_allergens": ["芒果"],
+      "health_benefits": [
+        {"text": "維生素 A、C、β-胡蘿蔔素", "source": "usda"}
+      ],
+      "purchase_advice": "飽滿有香氣、按壓略軟",
+      "warning": "⚠️ 過敏體質者慎食"
+    },
+    {
+      "name": "奇異果",
+      "aliases": ["kiwi", "獼猴桃"],
+      "category": "水果",
+      "safety_notes": [
+        {
+          "type": "allergen",
+          "text": "常見過敏原之一，部分人出現口腔過敏症候群（OAS）",
+          "sources": ["nhs_allergens"],
+          "confidence": "high"
+        }
+      ],
+      "pet_danger": {"dog": "safe (small amount)", "cat": "safe (small amount)", "source": "aspca"},
+      "common_allergens": ["奇異果"],
+      "health_benefits": [
+        {"text": "維生素 C（含量極高）、膳食纖維", "source": "cn_food_table"}
+      ],
+      "purchase_advice": "外皮完整、按壓略軟",
+      "warning": "⚠️ 過敏體質者慎食"
+    },
+    {
+      "name": "鳳梨",
+      "aliases": ["pineapple", "菠蘿"],
+      "category": "水果",
+      "safety_notes": [
+        {
+          "type": "allergen",
+          "text": "含菠蘿蛋白酶（bromelain），部分人會引起口腔刺痛或過敏",
+          "sources": ["nhs_allergens"],
+          "confidence": "high"
+        }
+      ],
+      "pet_danger": {"dog": "safe (small amount)", "cat": "consult vet", "source": "aspca"},
+      "common_allergens": ["鳳梨蛋白酶"],
+      "health_benefits": [
+        {"text": "菠蘿蛋白酶助消化、維生素 C、錳", "source": "usda"}
+      ],
+      "purchase_advice": "外皮金黃、底部香氣濃",
+      "warning": "⚠️ 過敏者、腸胃敏感者慎食"
+    },
+    {
+      "name": "草莓",
+      "aliases": ["strawberry"],
+      "category": "水果",
+      "safety_notes": [
+        {
+          "type": "pesticide",
+          "text": "常位列農藥殘留排行榜（環境工作組 EWG），建議充分清洗或選購有機",
+          "sources": ["twfda"],
+          "confidence": "high"
+        }
+      ],
+      "pet_danger": {"dog": "safe (small amount)", "cat": "safe (small amount)", "source": "aspca"},
+      "common_allergens": [],
+      "health_benefits": [
+        {"text": "維生素 C、抗氧化物（花青素）", "source": "usda"}
+      ],
+      "purchase_advice": "飽滿鮮紅、無霉斑"
+    },
+    {
+      "name": "西瓜",
+      "aliases": ["watermelon"],
+      "category": "水果",
+      "safety_notes": [
+        {
+          "type": "health_consideration",
+          "text": "性寒，經期中女性、脾胃虛寒者少食",
+          "sources": ["cn_food_table"],
+          "confidence": "medium"
+        }
+      ],
+      "pet_danger": {"dog": "safe (seedless)", "cat": "safe (seedless)", "source": "aspca", "note": "籽可能造成腸阻塞"},
+      "common_allergens": [],
+      "health_benefits": [
+        {"text": "高水分、番茄紅素", "source": "usda"}
+      ],
+      "purchase_advice": "敲擊聲清脆、底部黃斑成熟"
+    },
+    {
+      "name": "香蕉",
+      "aliases": ["banana"],
+      "category": "水果",
+      "safety_notes": [
+        {
+          "type": "health_consideration",
+          "text": "升糖指數中等偏高，糖尿病患者注意攝取量",
+          "sources": ["cn_food_table"],
+          "confidence": "medium"
+        }
+      ],
+      "pet_danger": {"dog": "safe (small amount)", "cat": "safe (small amount)", "source": "aspca"},
+      "common_allergens": [],
+      "health_benefits": [
+        {"text": "鉀、鎂、維生素 B6", "source": "usda"}
+      ],
+      "purchase_advice": "外皮微黃帶斑、無發黑"
+    },
+    {
+      "name": "蘋果",
+      "aliases": ["apple"],
+      "category": "水果",
+      "safety_notes": [
+        {
+          "type": "preparation",
+          "text": "表皮可能有食用蠟或農藥殘留，建議去皮或用鹽水/小蘇打水清洗",
+          "sources": ["twfda", "cfst"],
+          "confidence": "medium"
+        }
+      ],
+      "pet_danger": {"dog": "safe (no seeds)", "cat": "safe (no seeds)", "source": "aspca", "note": "蘋果籽含微量氰化物，須去除"},
+      "common_allergens": [],
+      "health_benefits": [
+        {"text": "膳食纖維（果膠）、槲皮素", "source": "usda"}
+      ],
+      "purchase_advice": "表皮光滑飽滿、有自然光澤"
+    },
+    {
+      "name": "雞肉",
+      "aliases": ["chicken"],
+      "category": "肉類",
+      "safety_notes": [
+        {
+          "type": "cooking",
+          "text": "必須完全煮熟（中心溫度 75°C 以上），避免沙門氏菌感染",
+          "sources": ["cfst", "codex"],
+          "confidence": "high"
+        }
+      ],
+      "pet_danger": {"dog": "safe (cooked, no bones)", "cat": "safe (cooked, no bones)", "source": "aspca", "note": "雞骨易碎，恐刺傷消化道"},
+      "common_allergens": ["雞肉（少見）"],
+      "health_benefits": [
+        {"text": "優質蛋白質、低脂", "source": "cn_food_table"}
+      ],
+      "purchase_advice": "外觀無瘀血、按壓有彈性、無異味"
+    },
+    {
+      "name": "豬肉",
+      "aliases": ["pork"],
+      "category": "肉類",
+      "safety_notes": [
+        {
+          "type": "cooking",
+          "text": "必須完全煮熟（中心溫度 70°C 以上）",
+          "sources": ["cfst"],
+          "confidence": "high"
+        }
+      ],
+      "pet_danger": {"dog": "safe (cooked)", "cat": "safe (cooked)", "source": "aspca"},
+      "common_allergens": [],
+      "health_benefits": [
+        {"text": "蛋白質、維生素 B1（豐富）", "source": "cn_food_table"}
+      ],
+      "purchase_advice": "色澤粉紅有光澤、無異味"
+    },
+    {
+      "name": "牛肉",
+      "aliases": ["beef"],
+      "category": "肉類",
+      "safety_notes": [
+        {
+          "type": "health_consideration",
+          "text": "紅肉類，建議每週攝取不超過 500g（WHO 加工肉品及紅肉指引）",
+          "sources": ["codex"],
+          "confidence": "medium"
+        }
+      ],
+      "pet_danger": {"dog": "safe (cooked)", "cat": "safe (cooked)", "source": "aspca"},
+      "common_allergens": [],
+      "health_benefits": [
+        {"text": "高蛋白、鐵、鋅、維生素 B12", "source": "cn_food_table"}
+      ],
+      "purchase_advice": "色澤鮮紅、脂肪呈白色、無異味"
+    },
+    {
+      "name": "羊肉",
+      "aliases": ["lamb", "mutton"],
+      "category": "肉類",
+      "safety_notes": [
+        {
+          "type": "health_consideration",
+          "text": "中醫視為溫熱性，體質燥熱者少食；冬季較適合",
+          "sources": ["cn_food_table"],
+          "confidence": "medium"
+        }
+      ],
+      "pet_danger": {"dog": "safe (cooked)", "cat": "safe (cooked)", "source": "aspca"},
+      "common_allergens": [],
+      "health_benefits": [
+        {"text": "高蛋白、鐵、維生素 B12", "source": "cn_food_table"}
+      ],
+      "purchase_advice": "色澤鮮紅、脂肪潔白"
+    },
+    {
+      "name": "鴨肉",
+      "aliases": ["duck"],
+      "category": "肉類",
+      "safety_notes": [
+        {
+          "type": "health_consideration",
+          "text": "中醫視為寒涼性，適合清熱；脾胃虛寒者少食",
+          "sources": ["cn_food_table"],
+          "confidence": "medium"
+        }
+      ],
+      "pet_danger": {"dog": "safe (cooked, no bones)", "cat": "safe (cooked, no bones)", "source": "aspca"},
+      "common_allergens": [],
+      "health_benefits": [
+        {"text": "蛋白質、B 群維生素", "source": "cn_food_table"}
+      ],
+      "purchase_advice": "外皮完整、按壓有彈性"
+    },
+    {
+      "name": "雞蛋",
+      "aliases": ["egg"],
+      "category": "蛋類",
+      "safety_notes": [
+        {
+          "type": "allergen",
+          "text": "常見過敏原之一（尤其兒童），部分人出現濕疹、蕁麻疹",
+          "sources": ["nhs_allergens"],
+          "confidence": "high"
+        }
+      ],
+      "pet_danger": {"dog": "safe (cooked)", "cat": "safe (cooked)", "source": "aspca"},
+      "common_allergens": ["雞蛋"],
+      "health_benefits": [
+        {"text": "優質蛋白質、膽鹼、維生素 D", "source": "cn_food_table"}
+      ],
+      "purchase_advice": "外殼完整、無裂痕",
+      "warning": "⚠️ 過敏體質者注意"
+    },
+    {
+      "name": "皮蛋",
+      "aliases": ["century egg", "松花蛋"],
+      "category": "加工食品",
+      "safety_notes": [
+        {
+          "type": "health_consideration",
+          "text": "傳統做法含氧化鉛（黃丹粉），現代無鉛工藝較安全；選購標示「無鉛」為佳",
+          "sources": ["cfst", "twfda"],
+          "confidence": "high"
+        }
+      ],
+      "pet_danger": {"dog": "not recommended", "cat": "not recommended", "source": "aspca"},
+      "common_allergens": [],
+      "health_benefits": [],
+      "purchase_advice": "選購標示「無鉛」、外殼完整"
+    },
+    {
+      "name": "蝦",
+      "aliases": ["shrimp", "prawn"],
+      "category": "海鮮",
+      "safety_notes": [
+        {
+          "type": "allergen",
+          "text": "甲殼類過敏原居首位之一，症狀可能嚴重",
+          "sources": ["nhs_allergens"],
+          "confidence": "high"
+        }
+      ],
+      "pet_danger": {"dog": "safe (cooked, no shell)", "cat": "safe (cooked, no shell)", "source": "aspca"},
+      "common_allergens": ["甲殼類"],
+      "health_benefits": [
+        {"text": "高蛋白、低脂、蝦青素", "source": "cn_food_table"}
+      ],
+      "purchase_advice": "蝦殼光澤、蝦頭與身體連接緊密、無異味",
+      "warning": "⚠️ 過敏體質者注意"
+    },
+    {
+      "name": "蟹",
+      "aliases": ["crab"],
+      "category": "海鮮",
+      "safety_notes": [
+        {
+          "type": "allergen",
+          "text": "常見過敏原；孕婦忌食（避免李斯特菌）",
+          "sources": ["nhs_allergens", "cfst"],
+          "confidence": "high"
+        }
+      ],
+      "pet_danger": {"dog": "safe (cooked, no shell)", "cat": "not recommended", "source": "aspca"},
+      "common_allergens": ["甲殼類"],
+      "health_benefits": [
+        {"text": "蛋白質、鋅、維生素 B12", "source": "cn_food_table"}
+      ],
+      "purchase_advice": "蟹腳完整、有重量感",
+      "warning": "⚠️ 過敏者、孕婦注意"
+    },
+    {
+      "name": "魚",
+      "aliases": ["fish"],
+      "category": "海鮮",
+      "safety_notes": [
+        {
+          "type": "safety",
+          "text": "注意魚骨（特別給兒童與長者）；生食注意寄生蟲風險",
+          "sources": ["cfst"],
+          "confidence": "high"
+        }
+      ],
+      "pet_danger": {"dog": "safe (cooked, deboned)", "cat": "safe (cooked, deboned)", "source": "aspca"},
+      "common_allergens": ["魚類"],
+      "health_benefits": [
+        {"text": "優質蛋白、Omega-3 脂肪酸、維生素 D", "source": "usda"}
+      ],
+      "purchase_advice": "眼睛清亮、鰓部鮮紅、鱗片完整"
+    },
+    {
+      "name": "蠔",
+      "aliases": ["oyster", "牡蠣", "生蠔"],
+      "category": "海鮮",
+      "safety_notes": [
+        {
+          "type": "allergen",
+          "text": "常見過敏原之一（甲殼類以外）",
+          "sources": ["nhs_allergens"],
+          "confidence": "high"
+        },
+        {
+          "type": "safety",
+          "text": "生食注意諾羅病毒、創傷弧菌等；孕婦、免疫低下者建議煮熟",
+          "sources": ["cfst"],
+          "confidence": "high"
+        }
+      ],
+      "pet_danger": {"dog": "safe (cooked)", "cat": "not recommended", "source": "aspca"},
+      "common_allergens": ["貝類"],
+      "health_benefits": [
+        {"text": "高鋅、優質蛋白", "source": "cn_food_table"}
+      ],
+      "purchase_advice": "殼閉合緊密、無異味",
+      "warning": "⚠️ 過敏者、孕婦注意"
+    },
+    {
+      "name": "魷魚",
+      "aliases": ["squid", "花枝", "墨魚"],
+      "category": "海鮮",
+      "safety_notes": [
+        {
+          "type": "health_consideration",
+          "text": "膽固醇含量較高，代謝異常者注意攝取量",
+          "sources": ["cn_food_table"],
+          "confidence": "medium"
+        }
+      ],
+      "pet_danger": {"dog": "safe (small amount)", "cat": "safe (small amount)", "source": "aspca"},
+      "common_allergens": ["貝類（部分）"],
+      "health_benefits": [
+        {"text": "高蛋白、牛磺酸", "source": "cn_food_table"}
+      ],
+      "purchase_advice": "表皮光澤、無腥味"
+    },
+    {
+      "name": "海帶",
+      "aliases": ["海帶芽", "kelp", "昆布"],
+      "category": "海鮮",
+      "safety_notes": [
+        {
+          "type": "health_consideration",
+          "text": "高碘，甲狀腺亢進者注意攝取量",
+          "sources": ["cn_food_table"],
+          "confidence": "medium"
+        }
+      ],
+      "pet_danger": {"dog": "safe (small amount)", "cat": "safe (small amount)", "source": "aspca"},
+      "common_allergens": [],
+      "health_benefits": [
+        {"text": "高碘、膳食纖維、褐藻膠", "source": "cn_food_table"}
+      ],
+      "purchase_advice": "色澤墨綠、質地厚實"
+    },
+    {
+      "name": "豆腐",
+      "aliases": ["tofu", "豆腐", "嫩豆腐", "老豆腐"],
+      "category": "豆製品",
+      "safety_notes": [
+        {
+          "type": "allergen",
+          "text": "大豆過敏者忌食",
+          "sources": ["nhs_allergens"],
+          "confidence": "high"
+        }
+      ],
+      "pet_danger": {"dog": "safe (plain, small amount)", "cat": "safe (plain, small amount)", "source": "aspca"},
+      "common_allergens": ["大豆"],
+      "health_benefits": [
+        {"text": "植物蛋白、鈣、异黃酮", "source": "cn_food_table"}
+      ],
+      "purchase_advice": "外觀完整、按壓有彈性、無酸味"
+    },
+    {
+      "name": "豆漿",
+      "aliases": ["soy milk"],
+      "category": "豆製品",
+      "safety_notes": [
+        {
+          "type": "cooking",
+          "text": "必須完全煮沸（生豆漿含皂素有毒，會引起噁心嘔吐）",
+          "sources": ["cfst", "cn_food_table"],
+          "confidence": "high"
+        }
+      ],
+      "pet_danger": {"dog": "safe (plain, small amount)", "cat": "safe (plain, small amount)", "source": "aspca"},
+      "common_allergens": ["大豆"],
+      "health_benefits": [
+        {"text": "植物蛋白、鈣、維生素 B 群", "source": "cn_food_table"}
+      ],
+      "purchase_advice": "選完全煮沸的；自製要持續攪拌至沸騰",
+      "warning": "⚠️ 未煮熟豆漿有毒"
+    },
+    {
+      "name": "腐竹",
+      "aliases": ["腐竹", "豆皮條", "tofu skin"],
+      "category": "豆製品",
+      "safety_notes": [
+        {
+          "type": "storage",
+          "text": "乾燥腐竹易受潮發霉，保存需乾燥環境",
+          "sources": ["cfst"],
+          "confidence": "medium"
+        }
+      ],
+      "pet_danger": {"dog": "safe", "cat": "safe", "source": "aspca"},
+      "common_allergens": ["大豆"],
+      "health_benefits": [
+        {"text": "高植物蛋白", "source": "cn_food_table"}
+      ],
+      "purchase_advice": "色澤淡黃、質地乾燥無霉味"
+    },
+    {
+      "name": "豆皮",
+      "aliases": ["豆腐皮", "腐皮", "tofu skin sheet"],
+      "category": "豆製品",
+      "safety_notes": [],
+      "pet_danger": {"dog": "safe", "cat": "safe", "source": "aspca"},
+      "common_allergens": ["大豆"],
+      "health_benefits": [
+        {"text": "高蛋白、低脂", "source": "cn_food_table"}
+      ],
+      "purchase_advice": "色澤淡黃、半透明"
+    },
+    {
+      "name": "白米",
+      "aliases": ["rice", "米飯"],
+      "category": "主食",
+      "safety_notes": [
+        {
+          "type": "health_consideration",
+          "text": "升糖指數（GI）較高，糖尿病患者注意攝取量",
+          "sources": ["cn_food_table"],
+          "confidence": "medium"
+        }
+      ],
+      "pet_danger": {"dog": "safe (cooked)", "cat": "safe (cooked, small amount)", "source": "aspca"},
+      "common_allergens": [],
+      "health_benefits": [
+        {"text": "碳水化合物主要來源", "source": "cn_food_table"}
+      ],
+      "purchase_advice": "顆粒飽滿、無蟲蛀"
+    },
+    {
+      "name": "麵條",
+      "aliases": ["noodles", "麵"],
+      "category": "主食",
+      "safety_notes": [
+        {
+          "type": "health_consideration",
+          "text": "注意湯底鈉含量（泡麵尤其高），高血壓者注意",
+          "sources": ["cfst"],
+          "confidence": "medium"
+        }
+      ],
+      "pet_danger": {"dog": "safe (plain, cooked)", "cat": "safe (plain, cooked)", "source": "aspca"},
+      "common_allergens": ["小麥（若含）"],
+      "health_benefits": [
+        {"text": "碳水化合物", "source": "cn_food_table"}
+      ],
+      "purchase_advice": "色澤自然、無油耗味"
+    },
+    {
+      "name": "河粉",
+      "aliases": ["米線", "rice noodles"],
+      "category": "主食",
+      "safety_notes": [
+        {
+          "type": "health_consideration",
+          "text": "米製品升糖指數高",
+          "sources": ["cn_food_table"],
+          "confidence": "medium"
+        }
+      ],
+      "pet_danger": {"dog": "safe (cooked)", "cat": "safe (cooked, small amount)", "source": "aspca"},
+      "common_allergens": [],
+      "health_benefits": [
+        {"text": "碳水化合物、易消化", "source": "cn_food_table"}
+      ],
+      "purchase_advice": "色澤自然、無酸味（變質警訊）"
+    },
+    {
+      "name": "糯米",
+      "aliases": ["glutinous rice", "糯米粉"],
+      "category": "主食",
+      "safety_notes": [
+        {
+          "type": "health_consideration",
+          "text": "難消化，胃弱者、消化不良者少食",
+          "sources": ["cn_food_table"],
+          "confidence": "medium"
+        }
+      ],
+      "pet_danger": {"dog": "safe (cooked)", "cat": "safe (cooked, small amount)", "source": "aspca"},
+      "common_allergens": [],
+      "health_benefits": [
+        {"text": "碳水化合物、溫補（中醫）", "source": "cn_food_table"}
+      ],
+      "purchase_advice": "顆粒飽滿、無異味"
+    },
+    {
+      "name": "燕麥",
+      "aliases": ["oats", "oatmeal"],
+      "category": "主食",
+      "safety_notes": [],
+      "pet_danger": {"dog": "safe (cooked, plain)", "cat": "safe (small amount)", "source": "aspca"},
+      "common_allergens": [],
+      "health_benefits": [
+        {"text": "β-葡聚糖有助降膽固醇、低 GI", "source": "usda"}
+      ],
+      "purchase_advice": "原片燕麥 > 即食調味燕麥"
+    },
+    {
+      "name": "番薯",
+      "aliases": ["地瓜", "sweet potato", "紅薯"],
+      "category": "主食",
+      "safety_notes": [],
+      "pet_danger": {"dog": "safe (cooked)", "cat": "safe (cooked, small amount)", "source": "aspca"},
+      "common_allergens": [],
+      "health_benefits": [
+        {"text": "β-胡蘿蔔素、膳食纖維、鉀", "source": "cn_food_table"}
+      ],
+      "purchase_advice": "外皮完整、按壓硬實"
+    },
+    {
+      "name": "醬油",
+      "aliases": ["soy sauce"],
+      "category": "調味料",
+      "safety_notes": [
+        {
+          "type": "health_consideration",
+          "text": "鈉含量高，高血壓、心血管疾病者注意攝取量",
+          "sources": ["cfst", "twfda"],
+          "confidence": "high"
+        }
+      ],
+      "pet_danger": {"dog": "not recommended (high salt)", "cat": "not recommended (high salt)", "source": "aspca"},
+      "common_allergens": ["大豆、小麥"],
+      "health_benefits": [],
+      "purchase_advice": "選低鈉版本；天然釀造 > 化學速釀"
+    },
+    {
+      "name": "蠔油",
+      "aliases": ["oyster sauce"],
+      "category": "調味料",
+      "safety_notes": [
+        {
+          "type": "allergen",
+          "text": "含蠔汁成分，貝類過敏者注意",
+          "sources": ["nhs_allergens"],
+          "confidence": "high"
+        }
+      ],
+      "pet_danger": {"dog": "not recommended", "cat": "not recommended", "source": "aspca"},
+      "common_allergens": ["貝類、大豆"],
+      "health_benefits": [],
+      "purchase_advice": "選成分簡單版本",
+      "warning": "⚠️ 貝類過敏者注意"
+    },
+    {
+      "name": "味精",
+      "aliases": ["MSG", "雞粉", "monosodium glutamate"],
+      "category": "調味料",
+      "safety_notes": [
+        {
+          "type": "consensus_view",
+          "text": "國際組織（WHO、Codex）視為安全，設定 ADI（每日攝入量）",
+          "sources": ["codex"],
+          "confidence": "high"
+        },
+        {
+          "type": "cultural_view",
+          "text": "中醫食療傳統視為可能引起「上火」或不適",
+          "sources": ["cn_food_table"],
+          "confidence": "medium",
+          "note": "部分亞洲人主觀敏感（如頭痛），尚無定論"
+        }
+      ],
+      "pet_danger": {"dog": "not recommended", "cat": "not recommended", "source": "aspca"},
+      "common_allergens": [],
+      "health_benefits": [],
+      "purchase_advice": "敏感者可選無味精版本",
+      "conflict_disclosed": true
+    },
+    {
+      "name": "鹽",
+      "aliases": ["salt"],
+      "category": "調味料",
+      "safety_notes": [
+        {
+          "type": "health_consideration",
+          "text": "WHO 建議每日鈉攝取 < 2g（約 5g 鹽），過量增加高血壓、心血管疾病風險",
+          "sources": ["codex"],
+          "confidence": "high"
+        }
+      ],
+      "pet_danger": {"dog": "avoid (toxic in large amounts)", "cat": "avoid (toxic in large amounts)", "source": "aspca"},
+      "common_allergens": [],
+      "health_benefits": [],
+      "purchase_advice": "海鹽、岩鹽差異不大；控制總量才是重點",
+      "warning": "⚠️ 寵物誤食大量鹽可能中毒"
+    },
+    {
+      "name": "臘腸",
+      "aliases": ["臘肉", "臘味", "Chinese sausage"],
+      "category": "加工食品",
+      "safety_notes": [
+        {
+          "type": "health_consideration",
+          "text": "高鈉、高脂肪，含亞硝酸鹽（防腐），加工肉品建議少食",
+          "sources": ["cfst", "codex"],
+          "confidence": "high"
+        }
+      ],
+      "pet_danger": {"dog": "TOXIC (high salt + garlic)", "cat": "TOXIC", "source": "aspca"},
+      "common_allergens": ["大豆、麩質（部分）"],
+      "health_benefits": [],
+      "purchase_advice": "選成分簡單、無添加亞硝酸鹽版本",
+      "warning": "⚠️ 切勿餵食寵物"
+    },
+    {
+      "name": "鹹蛋",
+      "aliases": ["鹹鴨蛋", "salted egg"],
+      "category": "加工食品",
+      "safety_notes": [
+        {
+          "type": "health_consideration",
+          "text": "高鈉、高膽固醇，1 顆含約 600mg 鈉",
+          "sources": ["cfst"],
+          "confidence": "high"
+        }
+      ],
+      "pet_danger": {"dog": "not recommended (high salt)", "cat": "not recommended (high salt)", "source": "aspca"},
+      "common_allergens": [],
+      "health_benefits": [],
+      "purchase_advice": "高血壓、心血管疾病者少食"
+    },
+    {
+      "name": "豆腐乳",
+      "aliases": ["腐乳", "fermented tofu"],
+      "category": "加工食品",
+      "safety_notes": [
+        {
+          "type": "health_consideration",
+          "text": "含鹽、含發酵產物，胃腸敏感者少食",
+          "sources": ["cfst"],
+          "confidence": "medium"
+        }
+      ],
+      "pet_danger": {"dog": "not recommended", "cat": "not recommended", "source": "aspca"},
+      "common_allergens": ["大豆"],
+      "health_benefits": [
+        {"text": "含益生菌", "source": "cn_food_table"}
+      ],
+      "purchase_advice": "選低鹽版本"
+    },
+    {
+      "name": "蓮子",
+      "aliases": ["lotus seed"],
+      "category": "其他",
+      "safety_notes": [
+        {
+          "type": "health_consideration",
+          "text": "中醫視為安神養心，適合甜品、湯品",
+          "sources": ["cn_food_table"],
+          "confidence": "medium"
+        }
+      ],
+      "pet_danger": {"dog": "safe (cooked)", "cat": "safe (cooked)", "source": "aspca"},
+      "common_allergens": [],
+      "health_benefits": [
+        {"text": "蛋白質、鈣、磷", "source": "cn_food_table"}
+      ],
+      "purchase_advice": "顆粒飽滿、無蟲蛀"
+    }
+  ]
+}

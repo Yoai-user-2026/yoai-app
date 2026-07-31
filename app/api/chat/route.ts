@@ -123,6 +123,21 @@ export async function POST(req: NextRequest) {
   if (imageBase64) {
     const visionOk = visionResult && Array.isArray(visionResult.items);
     const isFood = visionResult?.isFoodImage !== false; // 沒明確說「不是」就當作是
+    const isFoodTrue = visionResult?.isFoodImage === true;
+
+    // Debug log: 印出 vision 結果,方便排查
+    if (!visionOk || !isFood || extractedFoods.length === 0) {
+      console.log('[chat] gatekeeper fired:', {
+        visionOk,
+        isFoodImage: visionResult?.isFoodImage,
+        isFood,
+        isFoodTrue,
+        itemsCount: extractedFoods.length,
+        reason: visionResult?.reason,
+        rawResult: visionResult ? JSON.stringify(visionResult).slice(0, 500) : null,
+      });
+    }
+
     if (!visionOk || !isFood || extractedFoods.length === 0) {
       const reason =
         visionResult?.reason ||

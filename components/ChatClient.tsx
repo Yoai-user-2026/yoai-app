@@ -207,9 +207,11 @@ export function ChatClient({ userName, initialMessages, memories }: ChatClientPr
   };
 
   return (
-    <div className="flex flex-col h-screen">
+    // h-dvh: 動態視窗高度,自動避開手機 URL 列 (iOS Safari 修)
+    // 取代 h-screen (100vh):在 iOS 會過高,把底部輸入框擋在 URL 列後面
+    <div className="flex flex-col h-dvh">
       {/* Header */}
-      <header className="px-5 py-4 bg-white/60 backdrop-blur border-b border-cream-200 flex items-center gap-3">
+      <header className="px-5 py-4 bg-white/60 backdrop-blur border-b border-cream-200 flex items-center gap-3 flex-shrink-0">
         <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-cocoa-400 to-cocoa-600 flex items-center justify-center text-lg">
           🌿
         </div>
@@ -366,7 +368,7 @@ export function ChatClient({ userName, initialMessages, memories }: ChatClientPr
       </div>
 
       {/* Input */}
-      <div className="px-4 py-3 bg-white/80 backdrop-blur border-t border-cream-200">
+      <div className="px-4 py-3 bg-white/80 backdrop-blur border-t border-cream-200 flex-shrink-0 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
         {/* 引用預覽塊 */}
         {quote && (
           <div className="mb-2 bg-cream-50 border-l-2 border-cocoa-400 rounded-lg p-2 flex items-start gap-2">

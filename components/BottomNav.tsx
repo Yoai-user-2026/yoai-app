@@ -6,9 +6,9 @@ import { Sparkles, ShoppingBasket, Users, HeartPulse } from 'lucide-react';
 
 const items = [
   { href: '/chat', icon: Sparkles, label: 'Yoai' },
+  { href: '/health', icon: HeartPulse, label: '健康' },
   { href: '/food', icon: ShoppingBasket, label: '食庫' },
   { href: '/family', icon: Users, label: '我們' },
-  { href: '/health', icon: HeartPulse, label: '健康' },
 ];
 
 export function BottomNav() {

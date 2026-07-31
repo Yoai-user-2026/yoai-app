@@ -4,6 +4,7 @@ import { prisma } from '@/lib/db';
 import { ensureFamilyForUser } from '@/lib/family';
 import { FoodList } from '@/components/FoodList';
 import { FoodSummary } from '@/components/FoodSummary';
+import { ClearFridgeButton } from '@/components/ClearFridgeButton';
 import { ShoppingBasket, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 
@@ -73,6 +74,11 @@ export default async function FoodPage({
 
       {tab === 'foods' ? (
         <>
+          {/* 清空按鈕 — 只在有食物時顯示 */}
+          <div className="flex justify-end mb-3">
+            <ClearFridgeButton count={foods.length} />
+          </div>
+
           {/* 分類概覽 */}
           {Object.keys(byCategory).length > 0 && (
             <div className="flex gap-2 mb-4 overflow-x-auto pb-2 -mx-1 px-1">

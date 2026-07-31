@@ -280,19 +280,25 @@ export async function POST(req: NextRequest) {
       let imageUrl: string | null = null;
       if (imageBase64) {
         try {
-          const ext = imageBase64.startsWith('data:image/png') ? 'png'
-            : imageBase64.startsWith('data:image/webp') ? 'webp'
-            : imageBase64.startsWith('data:image/gif') ? 'gif'
-            : 'jpg';
+          // 解 data URL prefix ("data:image/jpeg;base64,XXX...") → 拿真正的 base64 字串
+          const dataUrlMatch = imageBase64.match(/^data:image\/(\w+);base64,(.+)$/);
+          if (!dataUrlMatch) {
+            throw new Error('invalid image data URL format');
+          }
+          const ext = dataUrlMatch[1] === 'jpeg' ? 'jpg' : dataUrlMatch[1];
+          const base64Data = dataUrlMatch[2];
+          const buffer = Buffer.from(base64Data, 'base64');
+
           const pathname = `chat/${userId}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-          const blob = await put(pathname, imageBase64, {
+          const blob = await put(pathname, buffer, {
             access: 'public',
             addRandomSuffix: false,
             contentType: `image/${ext}`,
           });
           imageUrl = blob.url;
-        } catch (err) {
-          console.error('[chat] failed to upload image to Blob:', err);
+          console.log(`[chat] image uploaded: ${blob.url} (${buffer.length} bytes)`);
+        } catch (err: any) {
+          console.error('[chat] failed to upload image to Blob:', err?.message || err);
           // 不影響主流程,繼續處理
         }
       }

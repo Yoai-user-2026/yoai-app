@@ -9,7 +9,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import foodKnowledge from '@/lib/data/food-knowledge.json';
-import { learnedToKbFormat } from '@/lib/food-learn';
+import { learnedToKbFormat, learnFood } from '@/lib/food-learn';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -200,6 +200,32 @@ export async function POST(req: NextRequest) {
         }
       } else {
         unknownFoods.add(record.name);
+      }
+    }
+
+    // === Lazy learning: 遇到未收錄的食物,自動 call LLM 學 ===
+    // (不阻塞主流程 — 用 Promise.all 並行,加 5 秒超時保險)
+    if (unknownFoods.size > 0) {
+      const toLearn = Array.from(unknownFoods).slice(0, 5); // 一次最多學 5 個,避免超時
+      const learningPromises = toLearn.map((name) =>
+        Promise.race([
+          learnFood(name),
+          new Promise((resolve) =>
+            setTimeout(
+              () => resolve({ source: 'failed' as const, error: 'timeout' }),
+              5000,
+            ),
+          ),
+        ]),
+      );
+      // 等所有學完,但不阻塞超過 6 秒
+      try {
+        await Promise.all(learningPromises);
+        console.log(`[food/summary] lazy-learned ${toLearn.length} foods`);
+        // 重新 query LearnedFood 一次,然後對 known 集合做後續比對
+        // (這次只記錄,下一次 summary 會自然命中)
+      } catch (err) {
+        console.error('[food/summary] lazy learning error:', err);
       }
     }
 

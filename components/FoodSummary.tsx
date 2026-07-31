@@ -111,7 +111,7 @@ export function FoodSummary({ initialData }: { initialData?: SummaryData | null 
   const [data, setData] = useState<SummaryData | null>(initialData || null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [expandedWarnings, setExpandedWarnings] = useState<Set<number>>(new Set());
+  const [expandedWarnings, setExpandedWarnings] = useState<Set<string>>(new Set());
 
   const generate = async () => {
     setLoading(true);
@@ -236,11 +236,52 @@ export function FoodSummary({ initialData }: { initialData?: SummaryData | null 
   const unknowns = data.unknown_foods || [];
   const suggestion = data.suggestions?.add_to_knowledge_base;
 
-  const toggleWarning = (idx: number) => {
+  // 把同一個食材的多條警告合在一起,變成一張卡
+  const groupedWarnings: Array<{
+    food: string;
+    emoji: string;
+    summary: string;
+    notes: Array<{ text: string; sources: string[] }>;
+    sources: string[];
+  }> = (() => {
+    const map = new Map<
+      string,
+      { notes: Array<{ text: string; sources: string[] }>; sources: Set<string> }
+    >();
+    for (const w of warnings) {
+      const existing = map.get(w.food);
+      if (existing) {
+        existing.notes.push({ text: w.note, sources: w.sources || [] });
+        for (const s of w.sources || []) existing.sources.add(s);
+      } else {
+        map.set(w.food, {
+          notes: [{ text: w.note, sources: w.sources || [] }],
+          sources: new Set(w.sources || []),
+        });
+      }
+    }
+    return Array.from(map.entries()).map(([food, data]) => {
+      // 預設用食材 emoji (無分類時用 🥬)
+      const emoji = '🥬';
+      // summary = 第一條 note 的 text (截到 60 字)
+      const summaryText = data.notes[0]?.text || '';
+      const summary =
+        summaryText.length > 60 ? summaryText.slice(0, 60) + '…' : summaryText;
+      return {
+        food,
+        emoji,
+        summary,
+        notes: data.notes,
+        sources: Array.from(data.sources),
+      };
+    });
+  })();
+
+  const toggleWarningGroup = (food: string) => {
     setExpandedWarnings((prev) => {
       const next = new Set(prev);
-      if (next.has(idx)) next.delete(idx);
-      else next.add(idx);
+      if (next.has(food)) next.delete(food);
+      else next.add(food);
       return next;
     });
   };
@@ -318,49 +359,50 @@ export function FoodSummary({ initialData }: { initialData?: SummaryData | null 
 
       {/* 安全注意 */}
       {warnings.length > 0 && (
-        <div className="bg-rose-50/60 border border-rose-100 rounded-2xl p-4">
-          <h3 className="text-sm text-rose-700 font-medium mb-3 flex items-center gap-1.5">
-            <ShieldAlert size={14} />
-            安全注意 ({warnings.length})
+        <div className="bg-amber-50/50 border border-amber-100 rounded-2xl p-4">
+          <h3 className="text-sm text-cocoa-600 font-medium mb-3 flex items-center gap-1.5">
+            <ShieldAlert size={14} className="text-amber-500" />
+            食材注意 ({groupedWarnings.length} 種)
           </h3>
           <div className="space-y-2">
-            {warnings.map((w, idx) => {
-              const expanded = expandedWarnings.has(idx);
+            {groupedWarnings.map((g) => {
+              const expanded = expandedWarnings.has(g.food);
               return (
                 <div
-                  key={`${w.food}-${idx}`}
-                  className="bg-white rounded-xl p-3 border border-rose-100/60"
+                  key={g.food}
+                  className="bg-white rounded-xl border border-amber-100/60 overflow-hidden"
                 >
                   <button
-                    onClick={() => toggleWarning(idx)}
-                    className="w-full text-left flex items-start justify-between gap-2"
+                    onClick={() => toggleWarningGroup(g.food)}
+                    className="w-full px-3 py-2.5 text-left flex items-start gap-2"
                   >
+                    <span className="text-base flex-shrink-0 mt-0.5">{g.emoji}</span>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-sm text-cocoa-600 font-medium">{w.food}</span>
-                        <span className="text-[10px] px-1.5 py-0.5 bg-rose-100 text-rose-600 rounded">
-                          {SAFETY_TYPE_LABEL[w.type] || w.type}
-                        </span>
-                        <span
-                          className={`w-1.5 h-1.5 rounded-full ${CONFIDENCE_DOT[w.confidence] || 'bg-cocoa-300'}`}
-                          title={`信心度: ${w.confidence}`}
-                        />
+                      <div className="text-sm text-cocoa-600 font-medium mb-0.5">
+                        {g.food}
                       </div>
-                      {expanded && (
-                        <p className="text-xs text-cocoa-500 mt-2 leading-relaxed">{w.note}</p>
-                      )}
-                      {expanded && w.sources && w.sources.length > 0 && (
-                        <p className="text-[10px] text-cocoa-400 mt-1.5">
-                          來源: {w.sources.map(formatSource).join(' · ')}
-                        </p>
-                      )}
+                      <div className="text-xs text-cocoa-500 leading-relaxed line-clamp-2">
+                        {g.summary}
+                      </div>
                     </div>
-                    <div className="flex-shrink-0 mt-0.5 text-cocoa-400">
+                    <div className="flex-shrink-0 mt-1 text-cocoa-400">
                       {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                     </div>
                   </button>
-                  {!expanded && (
-                    <p className="text-xs text-cocoa-500 mt-1 leading-relaxed line-clamp-2">{w.note}</p>
+
+                  {expanded && (
+                    <div className="px-3 pb-3 border-t border-amber-100/40 pt-2 space-y-1.5">
+                      {g.notes.map((n, i) => (
+                        <p key={i} className="text-xs text-cocoa-500 leading-relaxed">
+                          {n.text}
+                        </p>
+                      ))}
+                      {g.sources.length > 0 && (
+                        <p className="text-[10px] text-cocoa-400 pt-1">
+                          來源: {g.sources.map(formatSource).join(' · ')}
+                        </p>
+                      )}
+                    </div>
                   )}
                 </div>
               );

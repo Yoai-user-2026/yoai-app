@@ -3,11 +3,13 @@
 // - 與知識庫比對，提取安全注意
 // - 計算分類統計
 // - 返回結構化摘要
+// - 知識來源: 靜態 KB (lib/data/food-knowledge.json) + 動態 LearnedFood (DB)
 
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import foodKnowledge from '@/lib/data/food-knowledge.json';
+import { learnedToKbFormat } from '@/lib/food-learn';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -62,20 +64,37 @@ buildIndex();
 
 /**
  * 將食物名稱標準化 + 匹配知識庫
+ * 先查靜態 KB,miss 再查 LearnedFood (DB)
  */
-function findIngredient(foodName: string): FoodKnowledge['ingredients'][0] | null {
+async function findIngredient(foodName: string): Promise<FoodKnowledge['ingredients'][0] | null> {
   const normalized = foodName.toLowerCase().trim();
 
-  // 完全匹配
+  // 1. 靜態 KB 完全匹配
   if (nameToIngredient.has(normalized)) {
     return nameToIngredient.get(normalized) || null;
   }
 
-  // 部分匹配（食物名稱包含知識庫名稱，或反之）
+  // 2. 靜態 KB 部分匹配
   for (const [key, ing] of nameToIngredient.entries()) {
     if (normalized.includes(key) || key.includes(normalized)) {
       return ing;
     }
+  }
+
+  // 3. LearnedFood (DB) — 動態學過的
+  try {
+    const learned = await prisma.learnedFood.findFirst({
+      where: {
+        OR: [
+          { name: { equals: foodName, mode: 'insensitive' } },
+          { aliases: { has: foodName } },
+          { aliases: { has: normalized } },
+        ],
+      },
+    });
+    if (learned) return learnedToKbFormat(learned) as any;
+  } catch (err) {
+    console.error('[food/summary] LearnedFood lookup failed:', err);
   }
 
   return null;
@@ -139,8 +158,8 @@ export async function POST(req: NextRequest) {
       const category = record.category || '其他';
       categoryCount[category] = (categoryCount[category] || 0) + 1;
 
-      // 匹配知識庫
-      const ingredient = findIngredient(record.name);
+      // 匹配知識庫 (靜態 + 動態)
+      const ingredient = await findIngredient(record.name);
       if (ingredient) {
         matchedIngredients.add(ingredient.name);
 

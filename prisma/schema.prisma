@@ -270,3 +270,34 @@ model HealthFile {
 
   @@index([userId, createdAt])
 }
+
+// ========= 動態學習的食物知識 =========
+// 當用戶拍照加入新食物但不在靜態知識庫時,系統自動 call LLM 抽取結構化知識存這
+// 靜態 KB 優先 → LearnedFood 補充
+model LearnedFood {
+  id            String   @id @default(cuid())
+
+  name          String   @unique  // 標準名稱
+  aliases       String[] // 其他常見叫法
+  category      String   // 蔬菜/水果/肉類/...
+
+  // 結構化知識 (跟靜態 KB 一致,方便 merge)
+  safetyNotes   Json     // [{ type, text, sources, confidence }]
+  petDanger     Json?    // { dog, cat, source, note }
+  commonAllergens String[]
+  healthBenefits Json     // [{ text, source }]
+  purchaseAdvice String?
+
+  // 來源 — 哪個用戶教給 Yoai 的
+  sourceUserId  String?
+  source        String   // "user_taught" | "admin_added"
+
+  // 信心度 — low 表示 LLM 也不太確定,未來可人工 review
+  confidence    String   @default("medium") // "low" | "medium" | "high"
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([name])
+  @@index([category])
+}

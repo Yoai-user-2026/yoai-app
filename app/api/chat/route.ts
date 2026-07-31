@@ -8,6 +8,8 @@ import { ensureFamilyForUser } from '@/lib/family';
 import { checkRateLimit, recordUsage } from '@/lib/rate-limit';
 import { estimateTokens } from '@/lib/token-estimate';
 import { extractAndSaveMemories } from '@/lib/memory-extract';
+import { learnFood } from '@/lib/food-learn';
+import foodKnowledge from '@/lib/data/food-knowledge.json';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -90,6 +92,28 @@ export async function POST(req: NextRequest) {
       }
     } catch (err) {
       console.error('[vision] error:', err);
+    }
+  }
+
+  // === 動態學習:vision 識別出的新食物,如果不在靜態 KB,自動 call LLM 學 ===
+  // 學會後存 LearnedFood,未來 food summary 不會再標 "未收錄"
+  if (extractedFoods.length > 0) {
+    const staticNames = new Set(
+      (foodKnowledge as any).ingredients.map((i: any) => i.name.toLowerCase()),
+    );
+    for (const food of extractedFoods) {
+      const name = food.name?.trim();
+      if (!name) continue;
+      if (staticNames.has(name.toLowerCase())) continue; // 靜態 KB 已有,跳過
+      try {
+        const result = await learnFood(name, food.category);
+        if (result.source === 'newly_learned') {
+          console.log(`[chat] Yoai 學了新食物: ${name} (confidence: ${(result.data as any).confidence})`);
+        }
+      } catch (err) {
+        // 學習失敗不影響主流程
+        console.error(`[chat] learnFood failed for "${name}":`, err);
+      }
     }
   }
 

@@ -23,12 +23,23 @@ export default async function ChatPage() {
   return (
     <ChatClient
       userName={session!.user?.name || '主理人'}
-      initialMessages={history.map((h) => ({
-        id: h.id,
-        role: h.role as 'user' | 'assistant' | 'system',
-        content: h.content,
-        createdAt: h.createdAt.toISOString(),
-      }))}
+      initialMessages={history.map((h) => {
+        // 解析 metadata,提取 imageUrl
+        let imageUrl: string | undefined;
+        if (h.metadata) {
+          try {
+            const m = JSON.parse(h.metadata);
+            imageUrl = m.imageUrl || undefined;
+          } catch {}
+        }
+        return {
+          id: h.id,
+          role: h.role as 'user' | 'assistant' | 'system',
+          content: h.content,
+          imageUrl,
+          createdAt: h.createdAt.toISOString(),
+        };
+      })}
       memories={memories.map((m) => ({ key: m.key, value: m.value }))}
     />
   );

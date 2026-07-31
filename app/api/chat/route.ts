@@ -10,6 +10,7 @@ import { estimateTokens } from '@/lib/token-estimate';
 import { extractAndSaveMemories } from '@/lib/memory-extract';
 import { learnFood } from '@/lib/food-learn';
 import foodKnowledge from '@/lib/data/food-knowledge.json';
+import { put } from '@vercel/blob';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -257,10 +258,34 @@ export async function POST(req: NextRequest) {
       // 先存用戶訊息
       // 修正 Bug #3: 圖片時把視覺識別結果存進 metadata
       // 之後重看對話時,Yoai 能記得那張圖識別出什麼
-      // (記憶抽取已移到上面,確保新記憶能進當次回應的 system prompt)
+      // (記憶抽取已移到上面,確保新記憶能進當前回應的 system prompt)
+      //
+      // 圖片持久化: 把 base64 上傳到 Vercel Blob,存 URL 到 metadata.imageUrl
+      // 這樣重看對話時可以看到原圖,而不是只有「圖片」二字
+      let imageUrl: string | null = null;
+      if (imageBase64) {
+        try {
+          const ext = imageBase64.startsWith('data:image/png') ? 'png'
+            : imageBase64.startsWith('data:image/webp') ? 'webp'
+            : imageBase64.startsWith('data:image/gif') ? 'gif'
+            : 'jpg';
+          const pathname = `chat/${userId}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+          const blob = await put(pathname, imageBase64, {
+            access: 'public',
+            addRandomSuffix: false,
+            contentType: `image/${ext}`,
+          });
+          imageUrl = blob.url;
+        } catch (err) {
+          console.error('[chat] failed to upload image to Blob:', err);
+          // 不影響主流程,繼續處理
+        }
+      }
+
       const userMetadata = imageBase64
         ? JSON.stringify({
             hasImage: true,
+            imageUrl,
             vision: visionResult
               ? {
                   isFoodImage: visionResult.isFoodImage,
@@ -283,7 +308,7 @@ export async function POST(req: NextRequest) {
         },
       });
 
-      // 如果有食物,自動加入家庭記錄
+      // 如果有食物,自動加入家庭記錄 (使用 Blob URL 而非 base64)
       if (extractedFoods.length > 0) {
         const familyGroupId = await ensureFamilyForUser(userId);
         for (const food of extractedFoods) {
@@ -296,7 +321,7 @@ export async function POST(req: NextRequest) {
               category: food.category,
               quantity: food.quantity || 1,
               unit: food.unit,
-              imageUrl: imageBase64,
+              imageUrl: imageUrl || null,  // 用 Blob URL
               sourceText: 'photo',
               rawVisionJson: JSON.stringify(food),
             },

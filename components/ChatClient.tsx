@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Send, Camera, Sparkles, ThumbsUp, ThumbsDown, MessageSquare, X } from 'lucide-react';
+import { Send, Camera, Sparkles, ThumbsUp, ThumbsDown, MessageSquare, X, Quote, Reply } from 'lucide-react';
 import { VoiceInput } from './VoiceInput';
 import { BetaChip } from './BetaChip';
 
@@ -30,6 +30,8 @@ export function ChatClient({ userName, initialMessages, memories }: ChatClientPr
   const [uploading, setUploading] = useState(false);
   const [usage, setUsage] = useState<{ usedToday: number; remaining: number; limit: number; internal: boolean } | null>(null);
   const [feedbackTextFor, setFeedbackTextFor] = useState<string | null>(null);
+  // 引用:選中的某則過去訊息,點引用按鈕時設定
+  const [quote, setQuote] = useState<Message | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -60,15 +62,30 @@ export function ChatClient({ userName, initialMessages, memories }: ChatClientPr
     if (sending) return;
     if (!text.trim() && !imageBase64) return;
 
+    // === 構造送出訊息 ===
+    // 如果有引用,格式化成「引述過往 + 新問題」,讓 AI 明確看到上下文
+    let finalText = text;
+    if (quote && !imageBase64) {
+      const quoteText = quote.content;
+      const role = quote.role === 'user' ? '用戶' : 'Yoai';
+      finalText = `[引述過往對話 — ${role}說的]:\n"${quoteText}"\n\n[我的新問題]:\n${text}`;
+    } else if (quote && imageBase64) {
+      // 引用 + 圖片:把引述放在圖片訊息前
+      const quoteText = quote.content;
+      const role = quote.role === 'user' ? '用戶' : 'Yoai';
+      finalText = `[引述過往對話 — ${role}說的]:\n"${quoteText}"\n\n${text}`;
+    }
+
     const userMsg: Message = {
       id: `temp-${Date.now()}`,
       role: 'user',
-      content: text || '[圖片]',
+      content: finalText || '[圖片]',
       createdAt: new Date().toISOString(),
       imageUrl: imageBase64,
     };
     setMessages((m) => [...m, userMsg]);
     setInput('');
+    setQuote(null); // 送出後清掉引用
     setSending(true);
 
     // 加一個 placeholder assistant
@@ -83,7 +100,7 @@ export function ChatClient({ userName, initialMessages, memories }: ChatClientPr
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          message: text,
+          message: finalText,
           imageBase64,
         }),
       });
@@ -275,6 +292,34 @@ export function ChatClient({ userName, initialMessages, memories }: ChatClientPr
               </div>
             </div>
 
+            {/* 引用按鈕 — 所有訊息都可引用 */}
+            {msg.content && msg.content !== '[圖片]' && (
+              <div className={`flex ${msg.role === 'user' ? 'justify-end mr-1' : 'justify-start ml-10'}`}>
+                <button
+                  onClick={() => {
+                    if (quote?.id === msg.id) {
+                      setQuote(null);
+                    } else {
+                      setQuote(msg);
+                      setTimeout(() => {
+                        const ta = document.querySelector('textarea');
+                        ta?.focus();
+                      }, 100);
+                    }
+                  }}
+                  className={`mt-1 px-2 py-0.5 rounded-md text-[10px] flex items-center gap-1 transition-colors ${
+                    quote?.id === msg.id
+                      ? 'bg-cocoa-500 text-white'
+                      : 'text-cocoa-300 hover:text-cocoa-500 hover:bg-cream-100'
+                  }`}
+                  aria-label="引用這則訊息"
+                >
+                  <Quote size={10} />
+                  {quote?.id === msg.id ? '取消引用' : '引用'}
+                </button>
+              </div>
+            )}
+
             {/* 反饋按鈕 — 只在已完成的 assistant 訊息下顯示 */}
             {msg.role === 'assistant' && msg.content && !msg.content.includes('今天的額度') && (
               <div className="ml-10 mt-1 flex items-center gap-1">
@@ -322,6 +367,28 @@ export function ChatClient({ userName, initialMessages, memories }: ChatClientPr
 
       {/* Input */}
       <div className="px-4 py-3 bg-white/80 backdrop-blur border-t border-cream-200">
+        {/* 引用預覽塊 */}
+        {quote && (
+          <div className="mb-2 bg-cream-50 border-l-2 border-cocoa-400 rounded-lg p-2 flex items-start gap-2">
+            <Quote size={14} className="text-cocoa-400 flex-shrink-0 mt-0.5" />
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] text-cocoa-400 mb-0.5">
+                引用 {quote.role === 'user' ? '你' : 'Yoai'} 的訊息
+              </p>
+              <p className="text-xs text-cocoa-500 line-clamp-2 break-words">
+                {quote.content.slice(0, 150)}{quote.content.length > 150 ? '...' : ''}
+              </p>
+            </div>
+            <button
+              onClick={() => setQuote(null)}
+              className="p-1 text-cocoa-300 hover:text-cocoa-500 flex-shrink-0"
+              aria-label="取消引用"
+            >
+              <X size={14} />
+            </button>
+          </div>
+        )}
+
         <div className="flex items-end gap-2">
           <input
             ref={fileInputRef}

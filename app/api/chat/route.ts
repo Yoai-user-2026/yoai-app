@@ -176,31 +176,45 @@ export async function POST(req: NextRequest) {
     take: 8,
   });
 
-  // 構造 system prompt
-  let contextHint = '';
-  if (imageBase64) {
-    contextHint = '用戶上傳了一張圖片,以下是視覺模型識別的結果:\n';
-    if (visionResult) {
-      contextHint += JSON.stringify(visionResult, null, 2);
-    }
-    contextHint += '\n\n請根據這些資訊,用溫暖的語氣回應。先給情緒價值(一句話就夠),再整理資料。如果辨識出食物,主動詢問是否要加入家庭共享的食物記錄。';
-  }
-
+  // 構造 system prompt (圖片情境下不放 vision 結果到 system — 改放 user message)
   const systemPrompt = buildSystemPrompt({
     userName: session.user.name,
     memories,
-    context: contextHint,
   });
+
+  // === 構建最終的 user message ===
+  // 修正:圖片內容必須在 user message 裡,不能藏在 system prompt
+  // (model 對 user message 的權重高於 system 中段,放 system 容易被長 persona 蓋掉)
+  let finalUserContent: string;
+  if (imageBase64) {
+    const visionText = visionResult
+      ? JSON.stringify(
+          {
+            isFoodImage: visionResult.isFoodImage,
+            storeName: visionResult.storeName,
+            items: visionResult.items,
+            summary: visionResult.summary,
+          },
+          null,
+          2,
+        )
+      : '(視覺識別失敗,看不到圖片內容)';
+
+    if (userMessage && userMessage.trim()) {
+      // 用戶有打文字 + 圖片:兩者都要看
+      finalUserContent = `[用戶訊息 + 圖片]\n\n用戶說:\n${userMessage}\n\n[圖片視覺識別結果]:\n${visionText}\n\n請結合用戶的文字跟圖片內容回應。先給情緒價值(一句話就夠),再處理資料。如果辨識出食物,主動詢問是否要加入家庭共享的食物記錄。`;
+    } else {
+      // 純圖片(沒文字)
+      finalUserContent = `[用戶上傳了一張圖片,以下是視覺模型識別的結果]:\n${visionText}\n\n請根據這張圖的內容回應。先給情緒價值(一句話就夠),再整理資料。如果辨識出食物,主動詢問是否要加入家庭共享的食物記錄。`;
+    }
+  } else {
+    finalUserContent = userMessage || '[用戶訊息]';
+  }
 
   const messages = [
     { role: 'system' as const, content: systemPrompt },
     ...recent.map((r) => ({ role: r.role as 'user' | 'assistant', content: r.content })),
-    {
-      role: 'user' as const,
-      content: imageBase64 && !userMessage
-        ? '[用戶上傳了一張圖片,請根據視覺識別結果回應]'
-        : userMessage || '[用戶上傳了圖片]',
-    },
+    { role: 'user' as const, content: finalUserContent },
   ];
 
   // 估算 prompt tokens

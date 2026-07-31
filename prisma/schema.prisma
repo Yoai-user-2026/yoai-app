@@ -55,6 +55,9 @@ model FamilyGroup {
   name      String
   // 邀請碼 — 新成員可透過此碼加入
   inviteCode String  @unique @default(cuid())
+  // 內測帳號 — isInternal=true 的家庭不受 rate limit 限制
+  // 設給產品負責人/內測夥伴,讓他們自由測試
+  isInternal Boolean  @default(false)
   createdAt DateTime @default(now())
 
   members   User[]

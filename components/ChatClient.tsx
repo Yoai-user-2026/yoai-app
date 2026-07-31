@@ -28,7 +28,7 @@ export function ChatClient({ userName, initialMessages, memories }: ChatClientPr
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [usage, setUsage] = useState<{ usedToday: number; remaining: number; limit: number } | null>(null);
+  const [usage, setUsage] = useState<{ usedToday: number; remaining: number; limit: number; internal: boolean } | null>(null);
   const [feedbackTextFor, setFeedbackTextFor] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -205,10 +205,19 @@ export function ChatClient({ userName, initialMessages, memories }: ChatClientPr
         </div>
         {usage && (
           <div className="text-right">
-            <p className="text-xs text-cocoa-500 font-medium">
-              {usage.remaining}/{usage.limit}
-            </p>
-            <p className="text-[10px] text-cocoa-400">今日剩餘</p>
+            {usage.internal ? (
+              <>
+                <p className="text-xs text-amber-600 font-medium">∞ 內測</p>
+                <p className="text-[10px] text-cocoa-400">不限次數</p>
+              </>
+            ) : (
+              <>
+                <p className="text-xs text-cocoa-500 font-medium">
+                  {usage.remaining}/{usage.limit}
+                </p>
+                <p className="text-[10px] text-cocoa-400">今日剩餘</p>
+              </>
+            )}
           </div>
         )}
       </header>

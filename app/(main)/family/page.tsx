@@ -5,6 +5,7 @@ import { ensureFamilyForUser } from '@/lib/family';
 import { Copy, LogOut, User as UserIcon } from 'lucide-react';
 import Link from 'next/link';
 import { InviteGenerator } from '@/components/InviteGenerator';
+import { BetaChip } from '@/components/BetaChip';
 
 export default async function FamilyPage() {
   const session = await auth();
@@ -30,7 +31,10 @@ export default async function FamilyPage() {
   return (
     <div className="px-5 py-4 space-y-5">
       <header>
-        <h1 className="text-xl text-cocoa-600 font-medium">{group.name}</h1>
+        <div className="flex items-center gap-1.5">
+          <h1 className="text-xl text-cocoa-600 font-medium">{group.name}</h1>
+          <BetaChip />
+        </div>
         <p className="text-xs text-cocoa-400 mt-1">共 {group.members.length} 位成員</p>
       </header>
 

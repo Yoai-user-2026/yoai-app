@@ -5,6 +5,7 @@ import { ensureFamilyForUser } from '@/lib/family';
 import { FoodList } from '@/components/FoodList';
 import { FoodSummary } from '@/components/FoodSummary';
 import { ClearFridgeButton } from '@/components/ClearFridgeButton';
+import { BetaChip } from '@/components/BetaChip';
 import { ShoppingBasket, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 
@@ -40,7 +41,10 @@ export default async function FoodPage({
   return (
     <div className="px-5 py-4">
       <header className="mb-4">
-        <h1 className="text-xl text-cocoa-600 font-medium">食庫</h1>
+        <div className="flex items-center gap-1.5">
+          <h1 className="text-xl text-cocoa-600 font-medium">食庫</h1>
+          <BetaChip />
+        </div>
         <p className="text-xs text-cocoa-400 mt-1">大家共用的冰箱 & 採買清單 🌿</p>
       </header>
 

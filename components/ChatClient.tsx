@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, Camera, Sparkles, ThumbsUp, ThumbsDown, MessageSquare, X } from 'lucide-react';
 import { VoiceInput } from './VoiceInput';
+import { BetaChip } from './BetaChip';
 
 interface Message {
   id: string;
@@ -196,7 +197,10 @@ export function ChatClient({ userName, initialMessages, memories }: ChatClientPr
           🌿
         </div>
         <div className="flex-1">
-          <h1 className="text-base font-medium text-cocoa-600">Yoai</h1>
+          <div className="flex items-center gap-1.5">
+            <h1 className="text-base font-medium text-cocoa-600">Yoai</h1>
+            <BetaChip />
+          </div>
           <p className="text-xs text-cocoa-400">和 {userName} 在一起</p>
         </div>
         {usage && (

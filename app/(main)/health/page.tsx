@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { HealthConsent } from '@/components/HealthConsent';
 import { HealthDashboard } from '@/components/HealthDashboard';
+import { BetaChip } from '@/components/BetaChip';
 import { HeartPulse } from 'lucide-react';
 
 export default async function HealthPage() {
@@ -19,6 +20,7 @@ export default async function HealthPage() {
         <h1 className="text-xl text-cocoa-600 font-medium flex items-center gap-2">
           <HeartPulse size={20} className="text-rose-400" />
           健康
+          <BetaChip />
         </h1>
         <p className="text-xs text-cocoa-400 mt-1">你的身體數據檔案,完全個人化 🌿</p>
       </header>

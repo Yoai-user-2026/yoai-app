@@ -152,6 +152,7 @@ export async function POST(req: NextRequest) {
     }> = [];
     const allergensFound: Set<string> = new Set();
     const unknownFoods: Set<string> = new Set();
+    const seenPetDangers: Set<string> = new Set();
 
     for (const record of records) {
       // 統計分類
@@ -174,7 +175,7 @@ export async function POST(req: NextRequest) {
           });
         }
 
-        // 收集寵物禁忌
+        // 收集寵物禁忌 (用 seenPetDangers 去重 — 同個食物加 2 次只顯示 1 次)
         if (ingredient.pet_danger) {
           const dogDanger = ingredient.pet_danger.dog;
           const catDanger = ingredient.pet_danger.cat;
@@ -184,11 +185,14 @@ export async function POST(req: NextRequest) {
             catDanger?.toUpperCase().includes('TOXIC') ||
             catDanger?.toUpperCase().includes('UNSAFE')
           ) {
-            petDangers.push({
-              food: ingredient.name,
-              danger: `${dogDanger || catDanger}`,
-              note: ingredient.pet_danger.note,
-            });
+            if (!seenPetDangers.has(ingredient.name)) {
+              seenPetDangers.add(ingredient.name);
+              petDangers.push({
+                food: ingredient.name,
+                danger: `${dogDanger || catDanger}`,
+                note: ingredient.pet_danger.note,
+              });
+            }
           }
         }
 

@@ -40,7 +40,7 @@ export default async function FoodPage({
   return (
     <div className="px-5 py-4">
       <header className="mb-4">
-        <h1 className="text-xl text-cocoa-600 font-medium">家庭食物</h1>
+        <h1 className="text-xl text-cocoa-600 font-medium">食庫</h1>
         <p className="text-xs text-cocoa-400 mt-1">大家共用的冰箱 & 採買清單 🌿</p>
       </header>
 

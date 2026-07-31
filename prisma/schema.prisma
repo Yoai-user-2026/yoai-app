@@ -39,6 +39,12 @@ model User {
   feedbacks      Feedback[]
   sessions       Session[]
 
+  // 健康資料 — 完全個人化,跟家庭隔離
+  healthConsent              HealthConsent?
+  healthRecords              HealthRecord[]
+  healthCustomIndicators     HealthCustomIndicator[]
+  healthFiles                HealthFile[]
+
   @@index([familyGroupId])
   @@index([createdAt])
 }
@@ -162,4 +168,102 @@ model Session {
   expires      DateTime
 
   @@index([userId])
+}
+
+// ========= 健康資料:同意書 (GDPR-style) =========
+model HealthConsent {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  consentVersion  String   // 同意書版本,未來更新條款可追蹤
+  consentedAt     DateTime @default(now())
+  // 用戶記錄 — 用於 audit log
+  ipAddress       String?
+  userAgent       String?
+}
+
+// ========= 健康資料:體檢記錄 (加密存儲) =========
+model HealthRecord {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // 加密 9 個常規指標 (JSON: { cholesterol, ldl, hdl, ... })
+  encryptedData String   // base64 ciphertext
+  iv            String   // base64 IV
+  authTag       String   // GCM auth tag
+
+  // 明文 metadata
+  recordDate    DateTime // 體檢日期
+  note          String?  // 備註 ("公司年度體檢")
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([userId, recordDate])
+}
+
+// ========= 健康資料:自訂指標 =========
+// 一個 name 對應多個 entry (時間序列)
+model HealthCustomIndicator {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Name 不加密 (只是 label,例如 "月經週期", "血壓收縮壓")
+  name          String
+  unit          String?  // "天" | "mmHg" | "kg"
+  referenceMin  Float?   // 正常下限
+  referenceMax  Float?   // 正常上限
+
+  entries       HealthCustomIndicatorEntry[]
+
+  createdAt     DateTime @default(now())
+
+  @@unique([userId, name])
+  @@index([userId])
+}
+
+model HealthCustomIndicatorEntry {
+  id          String   @id @default(cuid())
+  indicatorId String
+  indicator   HealthCustomIndicator @relation(fields: [indicatorId], references: [id], onDelete: Cascade)
+
+  // 值 — 加密 (用 user-specific key)
+  encryptedValue String
+  iv             String
+  authTag        String
+  // 對 value 為文字型的支援 (例如 "正常 / 偏高")
+  isText         Boolean  @default(false)
+  // 明文 metadata
+  recordDate     DateTime
+  note           String?
+
+  createdAt      DateTime @default(now())
+
+  @@index([indicatorId, recordDate])
+}
+
+// ========= 健康資料:上傳文件 (病歷/醫生紙/體檢報告) =========
+model HealthFile {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Vercel Blob
+  blobUrl       String   // 公開 URL (Vercel Blob 預設 unguessable)
+  blobPathname  String   // 用於刪除
+
+  // 文件 metadata (不加密)
+  filename      String
+  fileType      String   // "pdf" | "image"
+  fileSize      Int      // bytes
+
+  // 病歷 metadata
+  documentType  String?  // "病歷" | "醫生紙" | "體檢報告" | "其他"
+  note          String?
+
+  createdAt     DateTime @default(now())
+
+  @@index([userId, createdAt])
 }

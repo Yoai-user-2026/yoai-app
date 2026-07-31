@@ -2,12 +2,13 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { MessageCircle, ShoppingBasket, Users } from 'lucide-react';
+import { Sparkles, ShoppingBasket, Users, HeartPulse } from 'lucide-react';
 
 const items = [
-  { href: '/chat', icon: MessageCircle, label: '聊聊' },
-  { href: '/food', icon: ShoppingBasket, label: '食物' },
-  { href: '/family', icon: Users, label: '家庭' },
+  { href: '/chat', icon: Sparkles, label: 'Yoai' },
+  { href: '/food', icon: ShoppingBasket, label: '食庫' },
+  { href: '/family', icon: Users, label: '我們' },
+  { href: '/health', icon: HeartPulse, label: '健康' },
 ];
 
 export function BottomNav() {
@@ -21,7 +22,7 @@ export function BottomNav() {
             <Link
               key={href}
               href={href}
-              className={`flex flex-col items-center gap-1 px-5 py-2 rounded-2xl transition-all ${
+              className={`flex flex-col items-center gap-1 px-3 py-2 rounded-2xl transition-all ${
                 active ? 'text-cocoa-600' : 'text-cocoa-400'
               }`}
             >

@@ -32,6 +32,10 @@ yarn-error.log*
 # vercel
 .vercel
 
+# GitHub Actions — PAT 沒有 workflow scope,推到 GitHub 會被拒
+# 這個文件保留在工作目錄,等用戶手動從 GitHub web UI 貼上
+.github/workflows/*.yml
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

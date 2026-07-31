@@ -227,9 +227,23 @@ export async function POST(req: NextRequest) {
           fullResponse += chunk;
           controller.enqueue(encoder.encode(chunk));
         }
-      } catch (err) {
+      } catch (err: any) {
         console.error('[chat] stream error:', err);
-        controller.enqueue(encoder.encode('\n\n(網路不順,我重試一下...)'));
+        // 暫時把錯誤細節帶出來方便排查（之後會收回）
+        const status = err?.status || err?.response?.status;
+        const code = err?.code || err?.response?.data?.code;
+        const msg = err?.message || String(err);
+        let hint = '(網路不順,我重試一下...)';
+        if (status === 401 || /api.?key|auth|invalid/i.test(msg)) {
+          hint = '\n\n(API Key 可能有問題,請檢查 DASHSCOPE_API_KEY)';
+        } else if (status === 403 || /quota|balance|insufficient|forbidden/i.test(msg)) {
+          hint = '\n\n(配額可能用完 / 權限不足,請到阿里雲百煉控制台查看)';
+        } else if (status === 404 || /model|not.?found/i.test(msg)) {
+          hint = '\n\n(模型不存在或暫時下線,請檢查 DASHSCOPE_CHAT_MODEL)';
+        } else if (status === 429 || /rate.?limit|too.?many/i.test(msg)) {
+          hint = '\n\n(阿里雲端限流,稍等幾秒再試)';
+        }
+        controller.enqueue(encoder.encode(`\n\n${hint} [status=${status} code=${code}]`));
       }
 
       // 存 assistant 回應

@@ -207,9 +207,18 @@ export function ChatClient({ userName, initialMessages, memories }: ChatClientPr
   };
 
   return (
-    // h-dvh: 動態視窗高度,自動避開手機 URL 列 (iOS Safari 修)
-    // 取代 h-screen (100vh):在 iOS 會過高,把底部輸入框擋在 URL 列後面
-    <div className="flex flex-col h-dvh">
+    // iOS Safari 看得到輸入框修:
+    // 之前用 h-dvh — 但 iOS Safari 模式下 dvh 仍包含 URL bar,
+    // → 整個 ChatClient 高度 = viewport 高度
+    // → header + messages + input 總和超過 viewport
+    // → input 被推到 URL bar 後面,用戶看不到(截圖 bug)
+    //
+    // 改用 fixed inset-0 + 內層 max-w-md 居中:
+    // → ChatClient 自己佔滿整個視窗
+    // → 內層 flex 計算:header (flex-shrink-0) + messages (flex-1) + input (flex-shrink-0)
+    // → input pb-20 給 BottomNav (fixed bottom-0, ~64px) 留位
+    <div className="fixed inset-0 z-40 flex justify-center bg-cream-50">
+      <div className="w-full max-w-md flex flex-col bg-cream-50">
       {/* Header */}
       <header className="px-5 py-4 bg-white/60 backdrop-blur border-b border-cream-200 flex items-center gap-3 flex-shrink-0">
         <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-cocoa-400 to-cocoa-600 flex items-center justify-center text-lg">
@@ -367,8 +376,11 @@ export function ChatClient({ userName, initialMessages, memories }: ChatClientPr
         ))}
       </div>
 
-      {/* Input */}
-      <div className="px-4 py-3 bg-white/80 backdrop-blur border-t border-cream-200 flex-shrink-0 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+      {/* Input
+          - flex-shrink-0 確保不被壓縮
+          - pb 留位給 BottomNav (fixed bottom-0, ~64px) + iOS safe area
+          - max(5rem=80px, env(safe-area)+4rem) 確保兩種情況都覆蓋 */}
+      <div className="px-4 py-3 bg-white/80 backdrop-blur border-t border-cream-200 flex-shrink-0" style={{ paddingBottom: 'max(5rem, calc(env(safe-area-inset-bottom) + 4rem))' }}>
         {/* 引用預覽塊 */}
         {quote && (
           <div className="mb-2 bg-cream-50 border-l-2 border-cocoa-400 rounded-lg p-2 flex items-start gap-2">
@@ -439,6 +451,7 @@ export function ChatClient({ userName, initialMessages, memories }: ChatClientPr
             <Send size={18} />
           </button>
         </div>
+      </div>
       </div>
     </div>
   );
